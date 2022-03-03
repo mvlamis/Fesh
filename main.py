@@ -1,11 +1,12 @@
 import pygame
 
 
+
 pygame.init()
 
 
-display_width = 350
-display_height = 200
+display_width = 960
+display_height = 544
 
 gameDisplay = pygame.display.set_mode((display_width,display_height))
 pygame.display.set_caption('lil dude man')
@@ -14,19 +15,23 @@ speed = 1
 
 black = (0,0,0)
 white = (255,255,255)
-x =  (display_width * 0.45)
-y = (display_height * 0.8)
+xPos =  (display_width * 0.45)
+yPos = (display_height * 0.8)
+
 x_change = 0
 y_change = 0
+
 clock = pygame.time.Clock()
 crashed = False
 carImg = pygame.image.load('lildude.png')
 
-def car(x,y):
-    gameDisplay.blit(carImg, (x,y))
+gameMap = pygame.image.load('map.png')
 
-x =  (display_width * 0.45)
-y = (display_height * 0.8)
+
+
+def car(xPos,yPos):
+    gameDisplay.blit(carImg, (xPos,yPos))
+
 
 while not crashed:
     for event in pygame.event.get():
@@ -50,11 +55,13 @@ while not crashed:
                 y_change = 0
 
 
-    x += x_change
-    y += y_change
+
+    xPos += x_change
+    yPos += y_change
      
     gameDisplay.fill(white)
-    car(x,y)
+    gameDisplay.blit(gameMap, (0,0))
+    car(xPos,yPos)
 
         
     pygame.display.update()
