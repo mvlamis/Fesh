@@ -13,6 +13,9 @@ display_height = 544
 gameDisplay = pygame.display.set_mode((display_width,display_height))
 pygame.display.set_caption('lil dude man')
 
+global xPos
+global yPos
+
 black = (0,0,0)
 white = (255,255,255)
 xPos = (-401)
@@ -61,6 +64,36 @@ debugColor = white
 
 
 backText = font.render('Back', True, white)
+quitText = font.render('Quit', True, white)
+
+def rightCollide(x,y1,y2):
+    global xPos
+    global yPos
+    if xPos == x:
+        if yPos <= y1 and yPos >= y2:
+            xPos = xPos - speed
+            
+def leftCollide(x,y1,y2):
+    global xPos
+    global yPos
+    if xPos == x:
+        if yPos <= y1 and yPos >= y2:
+            xPos = xPos + speed
+
+def topCollide(y,x1,x2):
+    global xPos
+    global yPos
+    if yPos == y:
+        if xPos <= x1 and xPos >= x2:
+            yPos = yPos + speed
+
+def bottomCollide(y,x1,x2):
+    global xPos
+    global yPos
+    if yPos == y:
+        if xPos <= x1 and xPos >= x2:
+            yPos = yPos - speed
+
 
 # menu screen
 while not hasStarted:
@@ -92,7 +125,7 @@ while not hasStarted:
                     cloud1.set_alpha(255)
                     cloud2.set_alpha(255)
                     pygame.display.update()
-                    clock.tick(60)
+
                 
                 print("start")
                 hasStarted = True
@@ -126,19 +159,23 @@ while not hasStarted:
             gameDisplay.blit(optionsButton, (430,330))
     pygame.display.update()
     clock.tick(60)
+    pygame.event.pump()
 
 # game loop
 while hasStarted:
-    text = font.render("Position: " + str(xPos) + ", " + str(yPos) + " | Speed: " + str(speed), True, white)
+    text = font.render("Position: " + str(xPos) + ", " + str(yPos) + " | Speed: " + str(speed) + " | FPS: ", True, white)
     debugText = font.render('Debug mode', True, debugColor)
     mouse = pygame.mouse.get_pos()
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             hasStarted = False
-    keys = pygame.key.get_pressed()  #checking pressed keys
 
-    if keys[pygame.K_ESCAPE]:
-        options = True
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_ESCAPE:
+                options = not options
+
+    keys = pygame.key.get_pressed()  #checking pressed keys
 
     if keys[pygame.K_UP]:
         yPos += speed
@@ -163,11 +200,14 @@ while hasStarted:
     
     # debug mode
     if debug == True:
-        text = font.render("Position: " + str(xPos) + ", " + str(yPos) + " | Speed: " + str(speed), True, white)
+        text = font.render("Position: " + str(xPos) + ", " + str(yPos) + " | Speed: " + str(speed) + " | FPS: " + str(int(clock.get_fps())), True, white)
         if keys[pygame.K_RIGHTBRACKET]:
             speed += 1
         if keys[pygame.K_LEFTBRACKET]:
             speed -= 1
+        if keys[pygame.K_BACKSLASH]:
+            speed = 1
+
 
     # left border
     if xPos > 500:
@@ -186,21 +226,12 @@ while hasStarted:
         yPos = yPos + speed
 
 
-    # tent right border
-    if xPos == -316 and yPos < -318 and yPos > -385:
-        xPos = xPos - speed
+    # tent border
+    rightCollide(-316,-318,-385)
+    leftCollide(-230,-318,-385)
+    topCollide(-318,-230,-316)
+    bottomCollide(-385,-230,-316)
 
-    # tent left border
-    if xPos == -230 and yPos < -318 and yPos > -385:
-        xPos = xPos + speed
-
-    # tent top border
-    if yPos == -318 and xPos < -230 and xPos > -316:
-        yPos = yPos + speed
-
-    # tent bottom border
-    if yPos == -385 and xPos < -230 and xPos > -316:
-        yPos = yPos - speed
 
 
     # house right border
@@ -224,17 +255,21 @@ while hasStarted:
         gameDisplay.blit(menuBg, (0,0))
         gameDisplay.blit(debugText, (150,150))
         gameDisplay.blit(backText, (150,450))
+        gameDisplay.blit(quitText, (700,450))
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # debug button
                 if options == True and mouse[0] > 150 and mouse[0] < 350 and mouse[1] > 150 and mouse[1] < 190:
                     debug = not debug
-                    print('debug')
                 
                 # back button
                 if options == True and mouse[0] > 150 and mouse[0] < 230 and mouse[1] > 450 and mouse[1] < 480:
                     options = False
-                    
+
+                # quit button
+                if options == True and mouse[0] > 700 and mouse[0] < 800 and mouse[1] > 450 and mouse[1] < 480:
+                    hasStarted = False
+    
         if debug:
             debugColor = (0,255,0)
         else:
@@ -249,7 +284,7 @@ while hasStarted:
 
     pygame.display.update()
     clock.tick(60)
-
+    pygame.event.pump()
 
 pygame.quit()
 quit()
