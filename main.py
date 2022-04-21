@@ -1,4 +1,4 @@
-from turtle import back
+from turtle import back, left
 import pygame
 import time
 
@@ -6,7 +6,7 @@ pygame.init()
 pygame.font.init()
 
 global debug
-debug = False
+debug = True
 
 display_width = 960
 display_height = 544
@@ -232,23 +232,31 @@ while hasStarted:
     topCollide(-318,-230,-316)
     bottomCollide(-385,-230,-316)
 
+    # house border
+    rightCollide(195,87,-160)
+    leftCollide(420,87,-160)
+    topCollide(87,420,195)
+    bottomCollide(-160,420,195)
 
+    # water border
+    leftCollide(-103,20,-150)
+    bottomCollide(-150,-103,-1000)
+    leftCollide(-974,-626,-1000)
+    leftCollide(-879,-441,-627)
+    leftCollide(-845,-224,-441)
+    leftCollide(-806,-150,-224)
+    bottomCollide(-224,-806,-1000)
+    bottomCollide(-441,-845,-1000)
+    bottomCollide(-627,-879,-1000)
+    topCollide(20,-103,-1000)
+    leftCollide(-131,115,20)
+    leftCollide(-164,365,111)
+    topCollide(112,-130,-1000)
 
-    # house right border
-    if xPos == 195 and yPos < 87 and yPos > -160:
-        xPos = xPos - speed
+    # pond border
+    leftCollide(-551,-625,-724)
+    leftCollide(-585,-724,-760)
 
-    # house left border
-    if xPos == 420 and yPos < 87 and yPos > -160:
-        xPos = xPos + speed
-
-    # house top border
-    if yPos == 87 and xPos < 420 and xPos > 195:
-        yPos = yPos + speed
-
-    # house bottom border
-    if yPos == -160 and xPos < 420 and xPos > 195:
-        yPos = yPos - speed
 
     if options == True:
         clock.tick(60)
