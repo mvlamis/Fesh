@@ -27,13 +27,16 @@ dialoguefont = pygame.font.Font('inter.ttf', 24)
 dialoguetext = ''
 
 playerSize = 32
-
+npcImg = pygame.image.load('images/npc.png')
+npcImg = pygame.transform.scale(npcImg, (playerSize,playerSize))
+npcRect = pygame.Rect(xPos + 420,yPos + 200,npcImg.get_width(),npcImg.get_height())
 counter = 0
 
 clock = pygame.time.Clock()
 hasStarted = False
 playerImg = pygame.image.load('char/Walk/Down/images/Char_walk_down_01.png')
 playerImg = pygame.transform.scale(playerImg, (playerSize,playerSize))
+playerRect = pygame.Rect(display_width/2, display_height/2, playerSize, playerSize)
 location = "outside"
 
 downImages = ['char/Walk/Down/images/Char_walk_down_01.png','char/Walk/Down/images/Char_walk_down_01.png','char/Walk/Down/images/Char_walk_down_01.png','char/Walk/Down/images/Char_walk_down_01.png','char/Walk/Down/images/Char_walk_down_01.png','char/Walk/Down/images/Char_walk_down_02.png','char/Walk/Down/images/Char_walk_down_02.png','char/Walk/Down/images/Char_walk_down_02.png','char/Walk/Down/images/Char_walk_down_02.png','char/Walk/Down/images/Char_walk_down_02.png','char/Walk/Down/images/Char_walk_down_03.png','char/Walk/Down/images/Char_walk_down_03.png','char/Walk/Down/images/Char_walk_down_03.png','char/Walk/Down/images/Char_walk_down_03.png','char/Walk/Down/images/Char_walk_down_03.png','char/Walk/Down/images/Char_walk_down_04.png','char/Walk/Down/images/Char_walk_down_04.png','char/Walk/Down/images/Char_walk_down_04.png','char/Walk/Down/images/Char_walk_down_04.png','char/Walk/Down/images/Char_walk_down_05.png','char/Walk/Down/images/Char_walk_down_05.png','char/Walk/Down/images/Char_walk_down_05.png','char/Walk/Down/images/Char_walk_down_05.png','char/Walk/Down/images/Char_walk_down_05.png','char/Walk/Down/images/Char_walk_down_06.png','char/Walk/Down/images/Char_walk_down_06.png','char/Walk/Down/images/Char_walk_down_06.png','char/Walk/Down/images/Char_walk_down_06.png','char/Walk/Down/images/Char_walk_down_06.png']
@@ -59,6 +62,7 @@ options = False
 
 mapImg = 'images/map.png'
 gameMap = pygame.image.load(mapImg)
+mapRect = gameMap.get_rect()
 gameMap = pygame.transform.scale(gameMap, (display_width * 2, display_height * 2))
 gameMap.set_alpha(0)
 mapAlpha = 0
@@ -126,7 +130,6 @@ def enterHouse():
     print('Entering house')
     xPos = 210
     yPos = -196
-    dialoguetext = 'You enter the house. It is a small house with a single window. The house is empty.'
 
 def enterOutside():
     global xPos
@@ -320,6 +323,12 @@ while hasStarted:
         topCollide(-144,187,-41)
         bottomCollide(-207,227,187, enterOutside)
 
+        # npc collision
+        if playerRect.colliderect(npcRect):
+            dialoguetext = 'i eated soap'
+            if keys[pygame.K_SPACE]:
+                dialoguetext = ''
+
     if options == True:
         clock.tick(60)
         gameDisplay.blit(menuBg, (0,0))
@@ -348,12 +357,18 @@ while hasStarted:
         gameDisplay.fill(black)
         gameDisplay.blit(gameMap, (xPos,yPos))
         gameDisplay.blit(playerImg, (display_width / 2, display_height / 2))
-        if dialoguetext != '':
-            dialogue("if i eated soap no i didnts")
+
+
+        if location == 'house':
+            gameDisplay.blit(npcImg, (xPos + 420,yPos + 200))
+            npcRect = pygame.Rect(xPos + 420,yPos + 200,npcImg.get_width(),npcImg.get_height())
+            pygame.draw.rect(gameDisplay, white, npcRect, 2)
     if debug == True:
         gameDisplay.blit(text, (0, 0))
-        
-
+        pygame.draw.rect(gameDisplay, white, playerRect, 2)
+        pygame.draw.rect(gameDisplay, white, npcRect, 2)
+    if dialoguetext != '':
+        dialogue(dialoguetext)
     pygame.display.update()
     clock.tick(60)
     pygame.event.pump()
