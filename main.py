@@ -22,7 +22,9 @@ xPos = (-401)
 yPos = (-401)
 speed = 1
 
-font = pygame.font.Font('freesansbold.ttf', 32)
+font = pygame.font.Font('inter.ttf', 32, bold = True)
+dialoguefont = pygame.font.Font('inter.ttf', 24)
+dialoguetext = ''
 
 playerSize = 32
 
@@ -32,6 +34,7 @@ clock = pygame.time.Clock()
 hasStarted = False
 playerImg = pygame.image.load('char/Walk/Down/images/Char_walk_down_01.png')
 playerImg = pygame.transform.scale(playerImg, (playerSize,playerSize))
+location = "outside"
 
 downImages = ['char/Walk/Down/images/Char_walk_down_01.png','char/Walk/Down/images/Char_walk_down_01.png','char/Walk/Down/images/Char_walk_down_01.png','char/Walk/Down/images/Char_walk_down_01.png','char/Walk/Down/images/Char_walk_down_01.png','char/Walk/Down/images/Char_walk_down_02.png','char/Walk/Down/images/Char_walk_down_02.png','char/Walk/Down/images/Char_walk_down_02.png','char/Walk/Down/images/Char_walk_down_02.png','char/Walk/Down/images/Char_walk_down_02.png','char/Walk/Down/images/Char_walk_down_03.png','char/Walk/Down/images/Char_walk_down_03.png','char/Walk/Down/images/Char_walk_down_03.png','char/Walk/Down/images/Char_walk_down_03.png','char/Walk/Down/images/Char_walk_down_03.png','char/Walk/Down/images/Char_walk_down_04.png','char/Walk/Down/images/Char_walk_down_04.png','char/Walk/Down/images/Char_walk_down_04.png','char/Walk/Down/images/Char_walk_down_04.png','char/Walk/Down/images/Char_walk_down_05.png','char/Walk/Down/images/Char_walk_down_05.png','char/Walk/Down/images/Char_walk_down_05.png','char/Walk/Down/images/Char_walk_down_05.png','char/Walk/Down/images/Char_walk_down_05.png','char/Walk/Down/images/Char_walk_down_06.png','char/Walk/Down/images/Char_walk_down_06.png','char/Walk/Down/images/Char_walk_down_06.png','char/Walk/Down/images/Char_walk_down_06.png','char/Walk/Down/images/Char_walk_down_06.png']
 leftImages = ['char/Walk/Left/images/Char_walk_left_01.png','char/Walk/Left/images/Char_walk_left_01.png','char/Walk/Left/images/Char_walk_left_01.png','char/Walk/Left/images/Char_walk_left_01.png','char/Walk/Left/images/Char_walk_left_01.png','char/Walk/Left/images/Char_walk_left_02.png','char/Walk/Left/images/Char_walk_left_02.png','char/Walk/Left/images/Char_walk_left_02.png','char/Walk/Left/images/Char_walk_left_02.png','char/Walk/Left/images/Char_walk_left_02.png','char/Walk/Left/images/Char_walk_left_03.png','char/Walk/Left/images/Char_walk_left_03.png','char/Walk/Left/images/Char_walk_left_03.png','char/Walk/Left/images/Char_walk_left_03.png','char/Walk/Left/images/Char_walk_left_03.png','char/Walk/Left/images/Char_walk_left_04.png','char/Walk/Left/images/Char_walk_left_04.png','char/Walk/Left/images/Char_walk_left_04.png','char/Walk/Left/images/Char_walk_left_04.png','char/Walk/Left/images/Char_walk_left_05.png','char/Walk/Left/images/Char_walk_left_05.png','char/Walk/Left/images/Char_walk_left_05.png','char/Walk/Left/images/Char_walk_left_05.png','char/Walk/Left/images/Char_walk_left_05.png','char/Walk/Left/images/Char_walk_left_06.png','char/Walk/Left/images/Char_walk_left_06.png','char/Walk/Left/images/Char_walk_left_06.png','char/Walk/Left/images/Char_walk_left_06.png','char/Walk/Left/images/Char_walk_left_06.png']
@@ -54,10 +57,13 @@ optionsButton = pygame.transform.scale(optionsButton, (100,50))
 global options 
 options = False
 
-gameMap = pygame.image.load('images/map.png')
+mapImg = 'images/map.png'
+gameMap = pygame.image.load(mapImg)
 gameMap = pygame.transform.scale(gameMap, (display_width * 2, display_height * 2))
 gameMap.set_alpha(0)
 mapAlpha = 0
+
+dialoguebox = pygame.image.load('images/dialoguebox.png')
 
 global debugColor
 debugColor = white
@@ -66,34 +72,72 @@ debugColor = white
 backText = font.render('Back', True, white)
 quitText = font.render('Quit', True, white)
 
-def rightCollide(x,y1,y2):
+def dialogue(text):
+    dialogueText = dialoguefont.render(str(text), True, white)
+    gameDisplay.blit(dialoguebox, (0,0))
+    gameDisplay.blit(dialogueText, (100,400))
+
+
+
+def rightCollide(x,y1,y2, action=None):
     global xPos
     global yPos
     if xPos == x:
         if yPos <= y1 and yPos >= y2:
             xPos = xPos - speed
+            if action != None:
+                action()
             
-def leftCollide(x,y1,y2):
+def leftCollide(x,y1,y2, action=None):
     global xPos
     global yPos
     if xPos == x:
         if yPos <= y1 and yPos >= y2:
             xPos = xPos + speed
+            if action != None:
+                action()
 
-def topCollide(y,x1,x2):
+def topCollide(y,x1,x2, action=None):
     global xPos
     global yPos
     if yPos == y:
         if xPos <= x1 and xPos >= x2:
             yPos = yPos + speed
+            if action != None:
+                action()
 
-def bottomCollide(y,x1,x2):
+def bottomCollide(y,x1,x2, action=None):
     global xPos
     global yPos
     if yPos == y:
         if xPos <= x1 and xPos >= x2:
             yPos = yPos - speed
+            if action != None:
+                action()
 
+def enterHouse():
+    global dialoguetext
+    global xPos
+    global yPos
+    global mapImg
+    global location
+    location = 'house'
+    mapImg = 'images/house.png'
+    print('Entering house')
+    xPos = 210
+    yPos = -196
+    dialoguetext = 'You enter the house. It is a small house with a single window. The house is empty.'
+
+def enterOutside():
+    global xPos
+    global yPos
+    global mapImg
+    global location
+    location = 'outside'
+    mapImg = 'images/map.png'
+    print('Entering outside')
+    xPos = 304
+    yPos = -170
 
 # menu screen
 while not hasStarted:
@@ -163,9 +207,11 @@ while not hasStarted:
 
 # game loop
 while hasStarted:
+    gameMap = pygame.image.load(mapImg)
     text = font.render("Position: " + str(xPos) + ", " + str(yPos) + " | Speed: " + str(speed) + " | FPS: ", True, white)
     debugText = font.render('Debug mode', True, debugColor)
     mouse = pygame.mouse.get_pos()
+    gameMap = pygame.transform.scale(gameMap, (display_width * 2, display_height * 2))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -197,6 +243,8 @@ while hasStarted:
         counter = (counter + 1) % len(rightImages)
         playerImg = pygame.image.load(rightImages[counter])
         playerImg = pygame.transform.scale(playerImg, (playerSize,playerSize))
+    if keys[pygame.K_SPACE]:
+        dialoguetext = ''
     
     # debug mode
     if debug == True:
@@ -208,55 +256,69 @@ while hasStarted:
         if keys[pygame.K_BACKSLASH]:
             speed = 1
 
+    if location == 'outside': # OUTSIDE COLLISIONS
 
-    # left border
-    if xPos > 500:
-        xPos = xPos - speed
+        # left border
+        if xPos > 500:
+            xPos = xPos - speed
 
-    # right border
-    if xPos < -1425:
-        xPos = xPos + speed
+        # right border
+        if xPos < -1425:
+            xPos = xPos + speed
 
-    # top border
-    if yPos > 300:
-        yPos = yPos - speed
+        # top border
+        if yPos > 300:
+            yPos = yPos - speed
 
-    # bottom border
-    if yPos < -785:
-        yPos = yPos + speed
+        # bottom border
+        if yPos < -785:
+            yPos = yPos + speed
+
+        # tent border
+        rightCollide(-316,-318,-385)
+        leftCollide(-230,-318,-385)
+        topCollide(-318,-230,-316)
+        bottomCollide(-385,-230,-316)
+
+        # house border
+        rightCollide(195,87,-160)
+        leftCollide(420,87,-160)
+        topCollide(87,420,195)
+        bottomCollide(-160,420,195, enterHouse)
 
 
-    # tent border
-    rightCollide(-316,-318,-385)
-    leftCollide(-230,-318,-385)
-    topCollide(-318,-230,-316)
-    bottomCollide(-385,-230,-316)
+        # water border
+        leftCollide(-103,20,-150)
+        bottomCollide(-150,-103,-1000)
+        leftCollide(-974,-626,-1000)
+        leftCollide(-879,-441,-627)
+        leftCollide(-845,-224,-441)
+        leftCollide(-806,-150,-224)
+        bottomCollide(-224,-806,-1000)
+        bottomCollide(-441,-845,-1000)
+        bottomCollide(-627,-879,-1000)
+        topCollide(20,-103,-1000)
+        leftCollide(-131,115,20)
+        leftCollide(-164,365,111)
+        topCollide(112,-130,-1000)
 
-    # house border
-    rightCollide(195,87,-160)
-    leftCollide(420,87,-160)
-    topCollide(87,420,195)
-    bottomCollide(-160,420,195)
+        # pond border
+        leftCollide(-551,-625,-724)
+        leftCollide(-585,-724,-760)
+        bottomCollide(-724,-551,-585)
+        bottomCollide(-760,-585,-730)
+        topCollide(-625,-551,-666)
+        topCollide(-654,-666,-700)
 
-    # water border
-    leftCollide(-103,20,-150)
-    bottomCollide(-150,-103,-1000)
-    leftCollide(-974,-626,-1000)
-    leftCollide(-879,-441,-627)
-    leftCollide(-845,-224,-441)
-    leftCollide(-806,-150,-224)
-    bottomCollide(-224,-806,-1000)
-    bottomCollide(-441,-845,-1000)
-    bottomCollide(-627,-879,-1000)
-    topCollide(20,-103,-1000)
-    leftCollide(-131,115,20)
-    leftCollide(-164,365,111)
-    topCollide(112,-130,-1000)
-
-    # pond border
-    leftCollide(-551,-625,-724)
-    leftCollide(-585,-724,-760)
-
+    if location == 'house': # HOUSE COLLISIONS
+        bottomCollide(73,434,131)
+        bottomCollide(202,131,-41)
+        leftCollide(-41,202,-144)
+        rightCollide(130,202,73)
+        rightCollide(434,73,-144)
+        topCollide(-144,434,227)
+        topCollide(-144,187,-41)
+        bottomCollide(-207,227,187, enterOutside)
 
     if options == True:
         clock.tick(60)
@@ -286,6 +348,8 @@ while hasStarted:
         gameDisplay.fill(black)
         gameDisplay.blit(gameMap, (xPos,yPos))
         gameDisplay.blit(playerImg, (display_width / 2, display_height / 2))
+        if dialoguetext != '':
+            dialogue("if i eated soap no i didnts")
     if debug == True:
         gameDisplay.blit(text, (0, 0))
         
