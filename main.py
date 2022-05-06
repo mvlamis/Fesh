@@ -12,6 +12,8 @@ display_width = 960
 display_height = 544
 gameDisplay = pygame.display.set_mode((display_width,display_height))
 pygame.display.set_caption('lil dude man')
+fishingHUD = False
+canFish = False
 
 global xPos
 global yPos
@@ -25,6 +27,9 @@ speed = 1
 font = pygame.font.Font('inter.ttf', 32, bold = True)
 dialoguefont = pygame.font.Font('inter.ttf', 24)
 dialoguetext = ''
+notiftext = ''
+
+inv = []
 
 playerSize = 32
 npcImg = pygame.image.load('images/npc.png')
@@ -43,6 +48,11 @@ downImages = ['char/Walk/Down/images/Char_walk_down_01.png','char/Walk/Down/imag
 leftImages = ['char/Walk/Left/images/Char_walk_left_01.png','char/Walk/Left/images/Char_walk_left_01.png','char/Walk/Left/images/Char_walk_left_01.png','char/Walk/Left/images/Char_walk_left_01.png','char/Walk/Left/images/Char_walk_left_01.png','char/Walk/Left/images/Char_walk_left_02.png','char/Walk/Left/images/Char_walk_left_02.png','char/Walk/Left/images/Char_walk_left_02.png','char/Walk/Left/images/Char_walk_left_02.png','char/Walk/Left/images/Char_walk_left_02.png','char/Walk/Left/images/Char_walk_left_03.png','char/Walk/Left/images/Char_walk_left_03.png','char/Walk/Left/images/Char_walk_left_03.png','char/Walk/Left/images/Char_walk_left_03.png','char/Walk/Left/images/Char_walk_left_03.png','char/Walk/Left/images/Char_walk_left_04.png','char/Walk/Left/images/Char_walk_left_04.png','char/Walk/Left/images/Char_walk_left_04.png','char/Walk/Left/images/Char_walk_left_04.png','char/Walk/Left/images/Char_walk_left_05.png','char/Walk/Left/images/Char_walk_left_05.png','char/Walk/Left/images/Char_walk_left_05.png','char/Walk/Left/images/Char_walk_left_05.png','char/Walk/Left/images/Char_walk_left_05.png','char/Walk/Left/images/Char_walk_left_06.png','char/Walk/Left/images/Char_walk_left_06.png','char/Walk/Left/images/Char_walk_left_06.png','char/Walk/Left/images/Char_walk_left_06.png','char/Walk/Left/images/Char_walk_left_06.png']
 rightImages = ['char/Walk/Right/images/Char_walk_right_01.png','char/Walk/Right/images/Char_walk_right_01.png','char/Walk/Right/images/Char_walk_right_01.png','char/Walk/Right/images/Char_walk_right_01.png','char/Walk/Right/images/Char_walk_right_01.png','char/Walk/Right/images/Char_walk_right_02.png','char/Walk/Right/images/Char_walk_right_02.png','char/Walk/Right/images/Char_walk_right_02.png','char/Walk/Right/images/Char_walk_right_02.png','char/Walk/Right/images/Char_walk_right_02.png','char/Walk/Right/images/Char_walk_right_03.png','char/Walk/Right/images/Char_walk_right_03.png','char/Walk/Right/images/Char_walk_right_03.png','char/Walk/Right/images/Char_walk_right_03.png','char/Walk/Right/images/Char_walk_right_03.png','char/Walk/Right/images/Char_walk_right_04.png','char/Walk/Right/images/Char_walk_right_04.png','char/Walk/Right/images/Char_walk_right_04.png','char/Walk/Right/images/Char_walk_right_04.png','char/Walk/Right/images/Char_walk_right_05.png','char/Walk/Right/images/Char_walk_right_05.png','char/Walk/Right/images/Char_walk_right_05.png','char/Walk/Right/images/Char_walk_right_05.png','char/Walk/Right/images/Char_walk_right_05.png','char/Walk/Right/images/Char_walk_right_06.png','char/Walk/Right/images/Char_walk_right_06.png','char/Walk/Right/images/Char_walk_right_06.png','char/Walk/Right/images/Char_walk_right_06.png','char/Walk/Right/images/Char_walk_right_06.png']
 upImages = ['char/Walk/Up/images/Char_walk_up_01.png','char/Walk/Up/images/Char_walk_up_01.png','char/Walk/Up/images/Char_walk_up_01.png','char/Walk/Up/images/Char_walk_up_01.png','char/Walk/Up/images/Char_walk_up_01.png','char/Walk/Up/images/Char_walk_up_02.png','char/Walk/Up/images/Char_walk_up_02.png','char/Walk/Up/images/Char_walk_up_02.png','char/Walk/Up/images/Char_walk_up_02.png','char/Walk/Up/images/Char_walk_up_02.png','char/Walk/Up/images/Char_walk_up_03.png','char/Walk/Up/images/Char_walk_up_03.png','char/Walk/Up/images/Char_walk_up_03.png','char/Walk/Up/images/Char_walk_up_03.png','char/Walk/Up/images/Char_walk_up_03.png','char/Walk/Up/images/Char_walk_up_04.png','char/Walk/Up/images/Char_walk_up_04.png','char/Walk/Up/images/Char_walk_up_04.png','char/Walk/Up/images/Char_walk_up_04.png','char/Walk/Up/images/Char_walk_up_04.png','char/Walk/Up/images/Char_walk_up_05.png','char/Walk/Up/images/Char_walk_up_05.png','char/Walk/Up/images/Char_walk_up_05.png','char/Walk/Up/images/Char_walk_up_05.png','char/Walk/Up/images/Char_walk_up_05.png','char/Walk/Up/images/Char_walk_up_06.png','char/Walk/Up/images/Char_walk_up_06.png','char/Walk/Up/images/Char_walk_up_06.png','char/Walk/Up/images/Char_walk_up_06.png','char/Walk/Up/images/Char_walk_up_06.png']
+
+# object images
+scaleImg = pygame.image.load('images/fishingscale.png')
+rodImg = pygame.image.load('images/fishingrod.png')
+carpImg = pygame.image.load('images/carp.png')
 
 cloud1 = pygame.image.load('images/cloud1.png')
 cloud2 = pygame.image.load('images/cloud2.png')
@@ -76,12 +86,22 @@ debugColor = white
 backText = font.render('Back', True, white)
 quitText = font.render('Quit', True, white)
 
+def fishing():
+    pygame.draw.rect(gameDisplay, black, (0,0,display_width,display_height))
+
+def touchingWater():
+    global canFish
+    print('touching water')
+    canFish = True
+
 def dialogue(text):
     dialogueText = dialoguefont.render(str(text), True, white)
     gameDisplay.blit(dialoguebox, (0,0))
     gameDisplay.blit(dialogueText, (100,400))
 
-
+def notif(text):
+    notifText = dialoguefont.render(str(text), True, white)
+    gameDisplay.blit(notifText, (650,320))
 
 def rightCollide(x,y1,y2, action=None):
     global xPos
@@ -224,6 +244,9 @@ while hasStarted:
             if event.key == pygame.K_ESCAPE:
                 options = not options
 
+        if event.type == pygame.USEREVENT:
+            notiftext = ''
+
     keys = pygame.key.get_pressed()  #checking pressed keys
 
     if keys[pygame.K_UP]:
@@ -248,6 +271,9 @@ while hasStarted:
         playerImg = pygame.transform.scale(playerImg, (playerSize,playerSize))
     if keys[pygame.K_SPACE]:
         dialoguetext = ''
+        if canFish == True:
+            fishing()
+            fishingHUD = True
     
     # debug mode
     if debug == True:
@@ -291,19 +317,19 @@ while hasStarted:
 
 
         # water border
-        leftCollide(-103,20,-150)
-        bottomCollide(-150,-103,-1000)
-        leftCollide(-974,-626,-1000)
-        leftCollide(-879,-441,-627)
-        leftCollide(-845,-224,-441)
-        leftCollide(-806,-150,-224)
-        bottomCollide(-224,-806,-1000)
-        bottomCollide(-441,-845,-1000)
-        bottomCollide(-627,-879,-1000)
-        topCollide(20,-103,-1000)
-        leftCollide(-131,115,20)
-        leftCollide(-164,365,111)
-        topCollide(112,-130,-1000)
+        leftCollide(-103,20,-150, touchingWater)
+        bottomCollide(-150,-103,-1000, touchingWater)
+        leftCollide(-974,-626,-1000, touchingWater)
+        leftCollide(-879,-441,-627, touchingWater)
+        leftCollide(-845,-224,-441, touchingWater)
+        leftCollide(-806,-150,-224, touchingWater)
+        bottomCollide(-224,-806,-1000, touchingWater)
+        bottomCollide(-441,-845,-1000, touchingWater)
+        bottomCollide(-627,-879,-1000, touchingWater)
+        topCollide(20,-103,-1000, touchingWater)
+        leftCollide(-131,115,20, touchingWater)
+        leftCollide(-164,365,111, touchingWater)
+        topCollide(112,-130,-1000, touchingWater)
 
         # pond border
         leftCollide(-551,-625,-724)
@@ -325,9 +351,12 @@ while hasStarted:
 
         # npc collision
         if playerRect.colliderect(npcRect):
-            dialoguetext = 'i eated soap'
+            dialoguetext = 'Take this, it\'s for you.'
             if keys[pygame.K_SPACE]:
-                dialoguetext = ''
+                notiftext = 'You got a fishing rod!'
+                pygame.time.set_timer(pygame.USEREVENT, 3000)
+                inv.append('fishing rod')
+                dialoguetext = '' 
 
     if options == True:
         clock.tick(60)
@@ -358,17 +387,25 @@ while hasStarted:
         gameDisplay.blit(gameMap, (xPos,yPos))
         gameDisplay.blit(playerImg, (display_width / 2, display_height / 2))
 
-
         if location == 'house':
             gameDisplay.blit(npcImg, (xPos + 420,yPos + 200))
             npcRect = pygame.Rect(xPos + 420,yPos + 200,npcImg.get_width(),npcImg.get_height())
-            pygame.draw.rect(gameDisplay, white, npcRect, 2)
     if debug == True:
         gameDisplay.blit(text, (0, 0))
         pygame.draw.rect(gameDisplay, white, playerRect, 2)
         pygame.draw.rect(gameDisplay, white, npcRect, 2)
     if dialoguetext != '':
         dialogue(dialoguetext)
+    if notiftext != '':
+        notif(notiftext)
+    if fishingHUD == True:
+        gameDisplay.blit(scaleImg, (750,200))
+
+    if 'fishing rod' in inv:
+        rodRect = rodImg.get_rect()
+        rodRect.y = display_height - rodRect.height
+        pygame.draw.rect(gameDisplay, white, rodRect, 0)
+        gameDisplay.blit(rodImg, (0, display_height - rodRect.height))
     pygame.display.update()
     clock.tick(60)
     pygame.event.pump()
