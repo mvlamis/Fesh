@@ -1,6 +1,7 @@
 from turtle import back, left
 import pygame
 import time
+import random
 
 pygame.init()
 pygame.font.init()
@@ -12,8 +13,10 @@ display_width = 960
 display_height = 544
 gameDisplay = pygame.display.set_mode((display_width,display_height))
 pygame.display.set_caption('lil dude man')
+canMove = True
 fishingHUD = False
 canFish = False
+fishingLineY = 200
 
 global xPos
 global yPos
@@ -29,7 +32,7 @@ dialoguefont = pygame.font.Font('inter.ttf', 24)
 dialoguetext = ''
 notiftext = ''
 
-inv = []
+inv = ['fishing rod']
 
 playerSize = 32
 npcImg = pygame.image.load('images/npc.png')
@@ -86,13 +89,13 @@ debugColor = white
 backText = font.render('Back', True, white)
 quitText = font.render('Quit', True, white)
 
-def fishing():
-    pygame.draw.rect(gameDisplay, black, (0,0,display_width,display_height))
-
 def touchingWater():
     global canFish
     print('touching water')
     canFish = True
+    pygame.time.set_timer(pygame.USEREVENT, 3000)
+
+
 
 def dialogue(text):
     dialogueText = dialoguefont.render(str(text), True, white)
@@ -246,35 +249,47 @@ while hasStarted:
 
         if event.type == pygame.USEREVENT:
             notiftext = ''
+            canFish = False
 
     keys = pygame.key.get_pressed()  #checking pressed keys
-
-    if keys[pygame.K_UP]:
-        yPos += speed
-        counter = (counter + 1) % len(upImages)
-        playerImg = pygame.image.load(upImages[counter])
-        playerImg = pygame.transform.scale(playerImg, (playerSize,playerSize))
-    if keys[pygame.K_DOWN]:
-        yPos -= speed
-        counter = (counter + 1) % len(downImages)
-        playerImg = pygame.image.load(downImages[counter])
-        playerImg = pygame.transform.scale(playerImg, (playerSize,playerSize))
-    if keys[pygame.K_LEFT]:
-        xPos += speed
-        counter = (counter + 1) % len(leftImages)
-        playerImg = pygame.image.load(leftImages[counter])
-        playerImg = pygame.transform.scale(playerImg, (playerSize,playerSize))
-    if keys[pygame.K_RIGHT]:
-        xPos -= speed
-        counter = (counter + 1) % len(rightImages)
-        playerImg = pygame.image.load(rightImages[counter])
-        playerImg = pygame.transform.scale(playerImg, (playerSize,playerSize))
+    if canMove:
+        if keys[pygame.K_UP]:
+            yPos += speed
+            counter = (counter + 1) % len(upImages)
+            playerImg = pygame.image.load(upImages[counter])
+            playerImg = pygame.transform.scale(playerImg, (playerSize,playerSize))
+        if keys[pygame.K_DOWN]:
+            yPos -= speed
+            counter = (counter + 1) % len(downImages)
+            playerImg = pygame.image.load(downImages[counter])
+            playerImg = pygame.transform.scale(playerImg, (playerSize,playerSize))
+        if keys[pygame.K_LEFT]:
+            xPos += speed
+            counter = (counter + 1) % len(leftImages)
+            playerImg = pygame.image.load(leftImages[counter])
+            playerImg = pygame.transform.scale(playerImg, (playerSize,playerSize))
+        if keys[pygame.K_RIGHT]:
+            xPos -= speed
+            counter = (counter + 1) % len(rightImages)
+            playerImg = pygame.image.load(rightImages[counter])
+            playerImg = pygame.transform.scale(playerImg, (playerSize,playerSize))
     if keys[pygame.K_SPACE]:
         dialoguetext = ''
-        if canFish == True:
-            fishing()
+        print(canFish)
+        if 'fishing rod' in inv and canFish == True and fishingHUD == False:
             fishingHUD = True
-    
+            canMove = False
+            print('fishing')
+    if keys[pygame.K_f] and fishingHUD == True:
+        if random.choice(['catch', 'miss']) == 'catch':
+            inv.append('carp')
+            notiftext = 'You caught a carp!'
+        else:
+            notiftext = 'You missed!'
+            
+        fishingHUD = False
+        canMove = True
+
     # debug mode
     if debug == True:
         text = font.render("Position: " + str(xPos) + ", " + str(yPos) + " | Speed: " + str(speed) + " | FPS: " + str(int(clock.get_fps())), True, white)
@@ -350,13 +365,14 @@ while hasStarted:
         bottomCollide(-207,227,187, enterOutside)
 
         # npc collision
-        if playerRect.colliderect(npcRect):
+        if playerRect.colliderect(npcRect) and 'fishing rod' not in inv:
             dialoguetext = 'Take this, it\'s for you.'
             if keys[pygame.K_SPACE]:
                 notiftext = 'You got a fishing rod!'
                 pygame.time.set_timer(pygame.USEREVENT, 3000)
                 inv.append('fishing rod')
                 dialoguetext = '' 
+                
 
     if options == True:
         clock.tick(60)
@@ -399,13 +415,29 @@ while hasStarted:
     if notiftext != '':
         notif(notiftext)
     if fishingHUD == True:
+        if fishingLineY == 200:
+            goingUp = False
+        if fishingLineY >= scaleImg.get_height()+200:
+            goingUp = True
+        if goingUp == True:
+            fishingLineY -= 3
+        else:
+            fishingLineY += 3
         gameDisplay.blit(scaleImg, (750,200))
-
+        pygame.draw.rect(gameDisplay, black , (750,200,scaleImg.get_width(),scaleImg.get_height()), 2)
+        pygame.draw.rect(gameDisplay, black, (750, fishingLineY, scaleImg.get_width(), 5))
     if 'fishing rod' in inv:
         rodRect = rodImg.get_rect()
         rodRect.y = display_height - rodRect.height
         pygame.draw.rect(gameDisplay, white, rodRect, 0)
         gameDisplay.blit(rodImg, (0, display_height - rodRect.height))
+
+    if 'carp' in inv:
+        carpRect = carpImg.get_rect()
+        carpRect.y = display_height - carpRect.height
+        pygame.draw.rect(gameDisplay, white, carpRect, 0)
+        gameDisplay.blit(carpImg, (0, display_height - carpRect.height))
+
     pygame.display.update()
     clock.tick(60)
     pygame.event.pump()
