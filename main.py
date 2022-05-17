@@ -32,18 +32,9 @@ dialoguefont = pygame.font.Font('inter.ttf', 24)
 dialoguetext = ''
 notiftext = ''
 
-global slot1
-global slot2
-global slot3
-global slot4
-global slot5
+
 global inv
-slot1 = ''
-slot2 = ''
-slot3 = ''
-slot4 = ''
-slot5 = ''
-inv = [slot1, slot2, slot3, slot4, slot5]
+inv = ['','','','','']
 fish = ['miss', 'carp']
 
 playerSize = 32
@@ -102,14 +93,13 @@ backText = font.render('Back', True, white)
 quitText = font.render('Quit', True, white)
 
 def addToInventory(item):
-    global slot1
-    global slot2
-    global slot3
-    global slot4
-    global slot5
     global inv
-    slot1 = item
-    inv = [slot1, slot2, slot3, slot4, slot5]
+    for i in range(len(inv)):
+        if inv[i] == '':
+            inv[i] = item
+            return
+    inv = ['','','','','']
+
 
 
 
@@ -451,17 +441,55 @@ while hasStarted:
         pygame.draw.rect(gameDisplay, black , (750,200,scaleImg.get_width(),scaleImg.get_height()), 2)
         pygame.draw.rect(gameDisplay, black, (750, fishingLineY, scaleImg.get_width(), 5))
 
-    if 'fishing rod' in inv:
-        rodRect = rodImg.get_rect()
-        rodRect.y = display_height - rodRect.height
-        pygame.draw.rect(gameDisplay, white, rodRect, 0)
-        gameDisplay.blit(rodImg, (0, display_height - rodRect.height))
+    if inv[0] != '':
+        pygame.draw.rect(gameDisplay, white, (0,512,32,32), 0)
+        if inv[0] == 'fishing rod':
+            gameDisplay.blit(rodImg, (0,512))
+        if inv[0] == 'carp':
+            gameDisplay.blit(carpImg, (0,512))
 
-    if 'carp' in inv:
-        carpRect = carpImg.get_rect()
-        carpRect.y = display_height - carpRect.height
-        pygame.draw.rect(gameDisplay, white, carpRect, 0)
-        gameDisplay.blit(carpImg, (0, display_height - carpRect.height))
+    if inv[1] != '':
+        pygame.draw.rect(gameDisplay, white, (32,512,32,32), 0)
+        if inv[1] == 'fishing rod':
+            gameDisplay.blit(rodImg, (32,512))
+        if inv[1] == 'carp':
+            gameDisplay.blit(carpImg, (32,512))
+
+    if inv[2] != '':
+        pygame.draw.rect(gameDisplay, white, (64,512,32,32), 0)
+        if inv[2] == 'fishing rod':
+            gameDisplay.blit(rodImg, (64,512))
+        if inv[2] == 'carp':
+            gameDisplay.blit(carpImg, (64,512))
+    
+    if inv[3] != '':
+        pygame.draw.rect(gameDisplay, white, (96,512,32,32), 0)
+        if inv[3] == 'fishing rod':
+            gameDisplay.blit(rodImg, (96,512))
+        if inv[3] == 'carp':
+            gameDisplay.blit(carpImg, (96,512))
+
+    if inv[4] != '':
+        pygame.draw.rect(gameDisplay, white, (128,512,32,32), 0)
+        if inv[4] == 'fishing rod':
+            gameDisplay.blit(rodImg, (128,512))
+        if inv[4] == 'carp':
+            gameDisplay.blit(carpImg, (128,512))
+    
+
+        
+
+    # if 'fishing rod' in inv:
+    #     rodRect = rodImg.get_rect()
+    #     rodRect.y = display_height - rodRect.height
+    #     pygame.draw.rect(gameDisplay, white, rodRect, 0)
+    #     gameDisplay.blit(rodImg, (0, display_height - rodRect.height))
+
+    # if 'carp' in inv:
+    #     carpRect = carpImg.get_rect()
+    #     carpRect.y = display_height - carpRect.height
+    #     pygame.draw.rect(gameDisplay, white, carpRect, 0)
+    #     gameDisplay.blit(carpImg, (0, display_height - carpRect.height))
 
     pygame.display.update()
     clock.tick(60)
