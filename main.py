@@ -32,7 +32,19 @@ dialoguefont = pygame.font.Font('inter.ttf', 24)
 dialoguetext = ''
 notiftext = ''
 
-inv = ['fishing rod']
+global slot1
+global slot2
+global slot3
+global slot4
+global slot5
+global inv
+slot1 = ''
+slot2 = ''
+slot3 = ''
+slot4 = ''
+slot5 = ''
+inv = [slot1, slot2, slot3, slot4, slot5]
+fish = ['miss', 'carp']
 
 playerSize = 32
 npcImg = pygame.image.load('images/npc.png')
@@ -89,12 +101,23 @@ debugColor = white
 backText = font.render('Back', True, white)
 quitText = font.render('Quit', True, white)
 
+def addToInventory(item):
+    global slot1
+    global slot2
+    global slot3
+    global slot4
+    global slot5
+    global inv
+    slot1 = item
+    inv = [slot1, slot2, slot3, slot4, slot5]
+
+
+
 def touchingWater():
     global canFish
     print('touching water')
     canFish = True
     pygame.time.set_timer(pygame.USEREVENT, 3000)
-
 
 
 def dialogue(text):
@@ -233,6 +256,7 @@ while not hasStarted:
 
 # game loop
 while hasStarted:
+    print(inv)
     gameMap = pygame.image.load(mapImg)
     text = font.render("Position: " + str(xPos) + ", " + str(yPos) + " | Speed: " + str(speed) + " | FPS: ", True, white)
     debugText = font.render('Debug mode', True, debugColor)
@@ -275,18 +299,18 @@ while hasStarted:
             playerImg = pygame.transform.scale(playerImg, (playerSize,playerSize))
     if keys[pygame.K_SPACE]:
         dialoguetext = ''
-        print(canFish)
         if 'fishing rod' in inv and canFish == True and fishingHUD == False:
             fishingHUD = True
             canMove = False
             print('fishing')
     if keys[pygame.K_f] and fishingHUD == True:
-        if random.choice(['catch', 'miss']) == 'catch':
-            inv.append('carp')
-            notiftext = 'You caught a carp!'
-        else:
+        caughtFish = random.choice(fish)
+        if caughtFish == 'miss':
             notiftext = 'You missed!'
-            
+        else:
+            addToInventory(caughtFish)
+            notiftext = 'You caught a ' + caughtFish + '!'
+
         fishingHUD = False
         canMove = True
 
@@ -370,7 +394,7 @@ while hasStarted:
             if keys[pygame.K_SPACE]:
                 notiftext = 'You got a fishing rod!'
                 pygame.time.set_timer(pygame.USEREVENT, 3000)
-                inv.append('fishing rod')
+                addToInventory('fishing rod')
                 dialoguetext = '' 
                 
 
@@ -426,6 +450,7 @@ while hasStarted:
         gameDisplay.blit(scaleImg, (750,200))
         pygame.draw.rect(gameDisplay, black , (750,200,scaleImg.get_width(),scaleImg.get_height()), 2)
         pygame.draw.rect(gameDisplay, black, (750, fishingLineY, scaleImg.get_width(), 5))
+
     if 'fishing rod' in inv:
         rodRect = rodImg.get_rect()
         rodRect.y = display_height - rodRect.height
