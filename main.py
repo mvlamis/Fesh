@@ -1,3 +1,4 @@
+from turtle import right
 import pygame
 import random
 
@@ -5,9 +6,9 @@ pygame.init()
 pygame.font.init()
 
 global debug
-debug = True
+debug = False # Set to true to see debug messages
 
-display_width = 960
+display_width = 960 # Collisions depend on game resolution, do not change
 display_height = 544
 gameDisplay = pygame.display.set_mode((display_width,display_height))
 pygame.display.set_caption('lil dude man')
@@ -30,10 +31,9 @@ dialoguefont = pygame.font.Font('inter.ttf', 24)
 dialoguetext = ''
 notiftext = ''
 
-
 global inv
-inv = ['','','','','']
-fish = ['miss', 'carp']
+inv = ['','','','',''] # Inventory
+fish = ['miss', 'carp'] # list of fish
 
 playerSize = 32
 npcImg = pygame.image.load('images/npc.png')
@@ -48,6 +48,7 @@ playerImg = pygame.transform.scale(playerImg, (playerSize,playerSize))
 playerRect = pygame.Rect(display_width/2, display_height/2, playerSize, playerSize)
 location = "outside"
 
+# Walking images, while key pressed, cycle through images
 downImages = ['char/Walk/Down/images/Char_walk_down_01.png','char/Walk/Down/images/Char_walk_down_01.png','char/Walk/Down/images/Char_walk_down_01.png','char/Walk/Down/images/Char_walk_down_01.png','char/Walk/Down/images/Char_walk_down_01.png','char/Walk/Down/images/Char_walk_down_02.png','char/Walk/Down/images/Char_walk_down_02.png','char/Walk/Down/images/Char_walk_down_02.png','char/Walk/Down/images/Char_walk_down_02.png','char/Walk/Down/images/Char_walk_down_02.png','char/Walk/Down/images/Char_walk_down_03.png','char/Walk/Down/images/Char_walk_down_03.png','char/Walk/Down/images/Char_walk_down_03.png','char/Walk/Down/images/Char_walk_down_03.png','char/Walk/Down/images/Char_walk_down_03.png','char/Walk/Down/images/Char_walk_down_04.png','char/Walk/Down/images/Char_walk_down_04.png','char/Walk/Down/images/Char_walk_down_04.png','char/Walk/Down/images/Char_walk_down_04.png','char/Walk/Down/images/Char_walk_down_05.png','char/Walk/Down/images/Char_walk_down_05.png','char/Walk/Down/images/Char_walk_down_05.png','char/Walk/Down/images/Char_walk_down_05.png','char/Walk/Down/images/Char_walk_down_05.png','char/Walk/Down/images/Char_walk_down_06.png','char/Walk/Down/images/Char_walk_down_06.png','char/Walk/Down/images/Char_walk_down_06.png','char/Walk/Down/images/Char_walk_down_06.png','char/Walk/Down/images/Char_walk_down_06.png']
 leftImages = ['char/Walk/Left/images/Char_walk_left_01.png','char/Walk/Left/images/Char_walk_left_01.png','char/Walk/Left/images/Char_walk_left_01.png','char/Walk/Left/images/Char_walk_left_01.png','char/Walk/Left/images/Char_walk_left_01.png','char/Walk/Left/images/Char_walk_left_02.png','char/Walk/Left/images/Char_walk_left_02.png','char/Walk/Left/images/Char_walk_left_02.png','char/Walk/Left/images/Char_walk_left_02.png','char/Walk/Left/images/Char_walk_left_02.png','char/Walk/Left/images/Char_walk_left_03.png','char/Walk/Left/images/Char_walk_left_03.png','char/Walk/Left/images/Char_walk_left_03.png','char/Walk/Left/images/Char_walk_left_03.png','char/Walk/Left/images/Char_walk_left_03.png','char/Walk/Left/images/Char_walk_left_04.png','char/Walk/Left/images/Char_walk_left_04.png','char/Walk/Left/images/Char_walk_left_04.png','char/Walk/Left/images/Char_walk_left_04.png','char/Walk/Left/images/Char_walk_left_05.png','char/Walk/Left/images/Char_walk_left_05.png','char/Walk/Left/images/Char_walk_left_05.png','char/Walk/Left/images/Char_walk_left_05.png','char/Walk/Left/images/Char_walk_left_05.png','char/Walk/Left/images/Char_walk_left_06.png','char/Walk/Left/images/Char_walk_left_06.png','char/Walk/Left/images/Char_walk_left_06.png','char/Walk/Left/images/Char_walk_left_06.png','char/Walk/Left/images/Char_walk_left_06.png']
 rightImages = ['char/Walk/Right/images/Char_walk_right_01.png','char/Walk/Right/images/Char_walk_right_01.png','char/Walk/Right/images/Char_walk_right_01.png','char/Walk/Right/images/Char_walk_right_01.png','char/Walk/Right/images/Char_walk_right_01.png','char/Walk/Right/images/Char_walk_right_02.png','char/Walk/Right/images/Char_walk_right_02.png','char/Walk/Right/images/Char_walk_right_02.png','char/Walk/Right/images/Char_walk_right_02.png','char/Walk/Right/images/Char_walk_right_02.png','char/Walk/Right/images/Char_walk_right_03.png','char/Walk/Right/images/Char_walk_right_03.png','char/Walk/Right/images/Char_walk_right_03.png','char/Walk/Right/images/Char_walk_right_03.png','char/Walk/Right/images/Char_walk_right_03.png','char/Walk/Right/images/Char_walk_right_04.png','char/Walk/Right/images/Char_walk_right_04.png','char/Walk/Right/images/Char_walk_right_04.png','char/Walk/Right/images/Char_walk_right_04.png','char/Walk/Right/images/Char_walk_right_05.png','char/Walk/Right/images/Char_walk_right_05.png','char/Walk/Right/images/Char_walk_right_05.png','char/Walk/Right/images/Char_walk_right_05.png','char/Walk/Right/images/Char_walk_right_05.png','char/Walk/Right/images/Char_walk_right_06.png','char/Walk/Right/images/Char_walk_right_06.png','char/Walk/Right/images/Char_walk_right_06.png','char/Walk/Right/images/Char_walk_right_06.png','char/Walk/Right/images/Char_walk_right_06.png']
@@ -58,6 +59,7 @@ scaleImg = pygame.image.load('images/fishingscale.png')
 rodImg = pygame.image.load('images/fishingrod.png')
 carpImg = pygame.image.load('images/carp.png')
 
+# loading screen clouds
 cloud1 = pygame.image.load('images/cloud1.png')
 cloud2 = pygame.image.load('images/cloud2.png')
 cloud1 = pygame.transform.scale(cloud1, (37 * 15,21 * 15)).convert()
@@ -92,23 +94,22 @@ quitText = font.render('Quit', True, white)
 
 def addToInventory(item):
     global inv
-    for i in range(len(inv)):
-        if inv[i] == '':
-            inv[i] = item
-            return
-    inv = ['','','','','']
+    if '' in inv:
+        for i in range(len(inv)):
+            if inv[i] == '':
+                inv[i] = item
+                return
+    else:
+        notif('Your inventory is full!')
 
-
-
-
-def touchingWater():
+def touchingWater(): # checks if player is touching water
     global canFish
     print('touching water')
     canFish = True
     pygame.time.set_timer(pygame.USEREVENT, 3000)
 
 
-def dialogue(text):
+def dialogue(text): 
     dialogueText = dialoguefont.render(str(text), True, white)
     gameDisplay.blit(dialoguebox, (0,0))
     gameDisplay.blit(dialogueText, (100,400))
@@ -152,6 +153,7 @@ def bottomCollide(y,x1,x2, action=None):
             yPos = yPos - speed
             if action != None:
                 action()
+    
 
 def enterHouse():
     global dialoguetext
@@ -176,7 +178,7 @@ def enterOutside():
     xPos = 304
     yPos = -170
 
-# menu screen
+# menu screen loop
 while not hasStarted:
     debugText = font.render('Debug mode', True, debugColor)
     mouse = pygame.mouse.get_pos()
@@ -216,7 +218,7 @@ while not hasStarted:
     gameDisplay.blit(menuBg, (0,0))
     gameDisplay.blit(gameMap, (xPos,yPos))
 
-    if options == True:
+    if options == True: # options menu
         gameDisplay.blit(menuBg, (0,0))
         gameDisplay.blit(debugText, (150,150))
         gameDisplay.blit(backText, (150,450))
@@ -285,7 +287,7 @@ while hasStarted:
             counter = (counter + 1) % len(rightImages)
             playerImg = pygame.image.load(rightImages[counter])
             playerImg = pygame.transform.scale(playerImg, (playerSize,playerSize))
-    if keys[pygame.K_SPACE]:
+    if keys[pygame.K_SPACE]: 
         dialoguetext = ''
         if 'fishing rod' in inv and canFish == True and fishingHUD == False:
             fishingHUD = True
@@ -293,12 +295,14 @@ while hasStarted:
             print('fishing')
     if keys[pygame.K_f] and fishingHUD == True:
         caughtFish = random.choice(fish)
-        if caughtFish == 'miss':
-            notiftext = 'You missed!'
+        if '' in inv:
+            if caughtFish == 'miss':
+                notiftext = 'You missed!'
+            else:
+                addToInventory(caughtFish)
+                notiftext = 'You caught a ' + caughtFish + '!'
         else:
-            addToInventory(caughtFish)
-            notiftext = 'You caught a ' + caughtFish + '!'
-
+            notiftext = 'Your inventory is full!'
         fishingHUD = False
         canMove = True
 
@@ -386,7 +390,7 @@ while hasStarted:
                 dialoguetext = '' 
                 
 
-    if options == True:
+    if options == True: # options menu
         clock.tick(60)
         gameDisplay.blit(menuBg, (0,0))
         gameDisplay.blit(debugText, (150,150))
@@ -422,11 +426,14 @@ while hasStarted:
         gameDisplay.blit(text, (0, 0))
         pygame.draw.rect(gameDisplay, white, playerRect, 2)
         pygame.draw.rect(gameDisplay, white, npcRect, 2)
-    if dialoguetext != '':
+        
+    if dialoguetext != '': # render dialogue box
         dialogue(dialoguetext)
-    if notiftext != '':
+
+    if notiftext != '': # render notification box
         notif(notiftext)
-    if fishingHUD == True:
+
+    if fishingHUD == True: # render fishing HUD
         if fishingLineY == 200:
             goingUp = False
         if fishingLineY >= scaleImg.get_height()+200:
@@ -439,55 +446,40 @@ while hasStarted:
         pygame.draw.rect(gameDisplay, black , (750,200,scaleImg.get_width(),scaleImg.get_height()), 2)
         pygame.draw.rect(gameDisplay, black, (750, fishingLineY, scaleImg.get_width(), 5))
 
-    if inv[0] != '':
+    if inv[0] != '': # first slot at x = 0
         pygame.draw.rect(gameDisplay, white, (0,512,32,32), 0)
         if inv[0] == 'fishing rod':
             gameDisplay.blit(rodImg, (0,512))
         if inv[0] == 'carp':
             gameDisplay.blit(carpImg, (0,512))
 
-    if inv[1] != '':
+    if inv[1] != '': # second slot at x = 32
         pygame.draw.rect(gameDisplay, white, (32,512,32,32), 0)
         if inv[1] == 'fishing rod':
             gameDisplay.blit(rodImg, (32,512))
         if inv[1] == 'carp':
             gameDisplay.blit(carpImg, (32,512))
 
-    if inv[2] != '':
+    if inv[2] != '': # third slot at x = 64
         pygame.draw.rect(gameDisplay, white, (64,512,32,32), 0)
         if inv[2] == 'fishing rod':
             gameDisplay.blit(rodImg, (64,512))
         if inv[2] == 'carp':
             gameDisplay.blit(carpImg, (64,512))
     
-    if inv[3] != '':
+    if inv[3] != '': # fourth slot at x = 96
         pygame.draw.rect(gameDisplay, white, (96,512,32,32), 0)
         if inv[3] == 'fishing rod':
             gameDisplay.blit(rodImg, (96,512))
         if inv[3] == 'carp':
             gameDisplay.blit(carpImg, (96,512))
 
-    if inv[4] != '':
+    if inv[4] != '': # fifth slot at x = 128
         pygame.draw.rect(gameDisplay, white, (128,512,32,32), 0)
         if inv[4] == 'fishing rod':
             gameDisplay.blit(rodImg, (128,512))
         if inv[4] == 'carp':
             gameDisplay.blit(carpImg, (128,512))
-    
-
-        
-
-    # if 'fishing rod' in inv:
-    #     rodRect = rodImg.get_rect()
-    #     rodRect.y = display_height - rodRect.height
-    #     pygame.draw.rect(gameDisplay, white, rodRect, 0)
-    #     gameDisplay.blit(rodImg, (0, display_height - rodRect.height))
-
-    # if 'carp' in inv:
-    #     carpRect = carpImg.get_rect()
-    #     carpRect.y = display_height - carpRect.height
-    #     pygame.draw.rect(gameDisplay, white, carpRect, 0)
-    #     gameDisplay.blit(carpImg, (0, display_height - carpRect.height))
 
     pygame.display.update()
     clock.tick(60)
