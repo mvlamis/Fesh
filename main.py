@@ -1,6 +1,4 @@
-from turtle import back, left
 import pygame
-import time
 import random
 
 pygame.init()
@@ -267,22 +265,22 @@ while hasStarted:
 
     keys = pygame.key.get_pressed()  #checking pressed keys
     if canMove:
-        if keys[pygame.K_UP]:
+        if keys[pygame.K_UP] or keys[pygame.K_w]:
             yPos += speed
             counter = (counter + 1) % len(upImages)
             playerImg = pygame.image.load(upImages[counter])
             playerImg = pygame.transform.scale(playerImg, (playerSize,playerSize))
-        if keys[pygame.K_DOWN]:
+        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
             yPos -= speed
             counter = (counter + 1) % len(downImages)
             playerImg = pygame.image.load(downImages[counter])
             playerImg = pygame.transform.scale(playerImg, (playerSize,playerSize))
-        if keys[pygame.K_LEFT]:
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             xPos += speed
             counter = (counter + 1) % len(leftImages)
             playerImg = pygame.image.load(leftImages[counter])
             playerImg = pygame.transform.scale(playerImg, (playerSize,playerSize))
-        if keys[pygame.K_RIGHT]:
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             xPos -= speed
             counter = (counter + 1) % len(rightImages)
             playerImg = pygame.image.load(rightImages[counter])
