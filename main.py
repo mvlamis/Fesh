@@ -9,6 +9,7 @@
                      
                      
 
+from glob import glob
 import pygame
 import random
 
@@ -50,6 +51,10 @@ npcImg = pygame.image.load('images/npc.png')
 npcImg = pygame.transform.scale(npcImg, (playerSize,playerSize))
 npcRect = pygame.Rect(xPos + 420,yPos + 200,npcImg.get_width(),npcImg.get_height())
 counter = 0
+
+charlesImg = pygame.image.load('images/charles.png')
+charlesImg = pygame.transform.scale(charlesImg, (playerSize,playerSize))
+
 
 clock = pygame.time.Clock()
 hasStarted = False
@@ -124,6 +129,15 @@ def dialogue(text):
     gameDisplay.blit(dialoguebox, (0,0))
     gameDisplay.blit(dialogueText, (100,400))
 
+
+def shopping():
+    global inv
+    global dialoguetext
+    if inv[0] == '':
+        dialoguetext = 'You got nothing on ya, who do you think you are? Scram!'
+    else:
+        dialoguetext = 'Wanna buy some\'n?'
+
 def notif(text):
     notifText = dialoguefont.render(str(text), True, white)
     gameDisplay.blit(notifText, (650,320))
@@ -177,16 +191,35 @@ def enterHouse():
     xPos = 210
     yPos = -196
 
+def enterShop():
+    global xPos
+    global yPos
+    global mapImg
+    global location
+    location = 'shop'
+    mapImg = 'images/shop.png'
+    print('Entering shop')
+    xPos = 336
+    yPos = -8
+
 def enterOutside():
     global xPos
     global yPos
     global mapImg
     global location
-    location = 'outside'
-    mapImg = 'images/map.png'
-    print('Entering outside')
-    xPos = 304
-    yPos = -170
+    if location == 'house':
+        mapImg = 'images/map.png'
+        print('Entering outside')
+        xPos = 304
+        yPos = -170
+        location = 'outside'
+
+    if location == 'shop':
+        mapImg = 'images/map.png'
+        print('Entering outside')
+        xPos = -274
+        yPos = -397
+        location = 'outside'
 
 # menu screen loop
 while not hasStarted:
@@ -257,6 +290,7 @@ while not hasStarted:
 # game loop
 while hasStarted:
     print(inv)
+    print(location)
     gameMap = pygame.image.load(mapImg)
     text = font.render("Position: " + str(xPos) + ", " + str(yPos) + " | Speed: " + str(speed) + " | FPS: ", True, white)
     debugText = font.render('Debug mode', True, debugColor)
@@ -348,7 +382,7 @@ while hasStarted:
         rightCollide(-316,-318,-385)
         leftCollide(-230,-318,-385)
         topCollide(-318,-230,-316)
-        bottomCollide(-385,-230,-316)
+        bottomCollide(-385,-230,-316, enterShop)
 
         # house border
         rightCollide(195,87,-160)
@@ -399,6 +433,12 @@ while hasStarted:
                 addToInventory('fishing rod')
                 dialoguetext = '' 
                 
+    if location == 'shop': # SHOP COLLISIONS
+        bottomCollide(-16, 449,220, enterOutside)
+        leftCollide(220, 122, -16)
+        rightCollide(449, 122, -16)
+        bottomCollide(122, 449, 122, shopping)
+
 
     if options == True: # options menu
         clock.tick(60)
@@ -432,6 +472,9 @@ while hasStarted:
         if location == 'house':
             gameDisplay.blit(npcImg, (xPos + 420,yPos + 200))
             npcRect = pygame.Rect(xPos + 420,yPos + 200,npcImg.get_width(),npcImg.get_height())
+
+        if location == 'shop':
+            gameDisplay.blit(charlesImg, (xPos + 210,yPos + 100))
     if debug == True:
         gameDisplay.blit(text, (0, 0))
         pygame.draw.rect(gameDisplay, white, playerRect, 2)
