@@ -13,11 +13,13 @@ from glob import glob
 import pygame
 import random
 
+from pyparsing import col
+
 pygame.init()
 pygame.font.init()
 
 global debug
-debug = False # set to true to see debug info
+debug = True # set to true to see debug info
 
 display_width = 960 # collisions depend on game resolution, do not change
 display_height = 544
@@ -107,6 +109,9 @@ debugColor = white
 backText = font.render('Back', True, white)
 quitText = font.render('Quit', True, white)
 
+def drawCollisionLine(x1,y1,x2,y2): # draws a line to show where the player is colliding with
+    pygame.draw.line(gameDisplay, white, (xPos + x1, yPos + y1), (xPos + x2,yPos + y2), 2)
+
 def addToInventory(item):
     global inv
     if '' in inv:
@@ -129,6 +134,50 @@ def dialogue(text):
     gameDisplay.blit(dialoguebox, (0,0))
     gameDisplay.blit(dialogueText, (100,400))
 
+def choice(choice1, choice2, choice3=None, choice4=None): # choice hud
+    choice1Text = font.render(str(choice1), True, white)
+    choice1Rect = choice1Text.get_rect()
+    choice1Rect.topleft = (650,400) # set the top left corner of the rectangle to coords of text
+    choice2Text = font.render(str(choice2), True, white)
+    choice2Rect = choice2Text.get_rect()
+    choice2Rect.topleft = (650,450)
+
+    #only render the choices if they are not none
+    if choice3 != None:
+        choice3Text = font.render(str(choice3), True, white)
+        choice3Rect = choice3Text.get_rect()
+        choice3Rect.topleft = (650,500)
+        gameDisplay.blit(choice3Text, (850,400))
+    if choice4 != None:
+        choice4Text = font.render(str(choice4), True, white)
+        choice4Rect = choice4Text.get_rect()
+        choice4Rect.topleft = (650,550)
+        gameDisplay.blit(choice4Text, (850,450))
+    gameDisplay.blit(choice1Text, (650,400))
+    gameDisplay.blit(choice2Text, (650,450))
+
+    # draw rects behind the text to detect mouse clicks
+    pygame.draw.rect(gameDisplay, white, choice1Rect, 1, 5)
+    pygame.draw.rect(gameDisplay, white, choice2Rect, 1, 5)
+    if choice3 != None:
+        pygame.draw.rect(gameDisplay, white, choice3Rect, 1, 5)
+    if choice4 != None:
+        pygame.draw.rect(gameDisplay, white, choice4Rect, 1, 5)
+
+    # click handler
+    for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if choice1Rect.collidepoint(pygame.mouse.get_pos()):
+                return choice1
+            elif choice2Rect.collidepoint(pygame.mouse.get_pos()):
+                return choice2
+            elif choice3 != None:
+                if choice3Rect.collidepoint(pygame.mouse.get_pos()):
+                    return choice3
+            elif choice4 != None:
+                if choice4Rect.collidepoint(pygame.mouse.get_pos()):
+                    return choice4
+
 
 def shopping():
     global inv
@@ -142,6 +191,8 @@ def notif(text):
     notifText = dialoguefont.render(str(text), True, white)
     gameDisplay.blit(notifText, (650,320))
 
+collisionLines = []
+
 def rightCollide(x,y1,y2, action=None):
     global xPos
     global yPos
@@ -150,6 +201,12 @@ def rightCollide(x,y1,y2, action=None):
             xPos = xPos - speed
             if action != None:
                 action()
+
+    collisionLines.append(x)
+    collisionLines.append(y1)
+    collisionLines.append(y2)
+
+    drawCollisionLine(x,y1,x,y2)
             
 def leftCollide(x,y1,y2, action=None):
     global xPos
