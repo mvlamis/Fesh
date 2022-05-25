@@ -8,18 +8,14 @@
 #      `\\´´\¸.·´
                      
                      
-
-from glob import glob
 import pygame
 import random
-
-from pyparsing import col
 
 pygame.init()
 pygame.font.init()
 
 global debug
-debug = True # set to true to see debug info
+debug = False # set to true to see debug info
 
 display_width = 960 # collisions depend on game resolution, do not change
 display_height = 544
@@ -37,15 +33,22 @@ black = (0,0,0)
 white = (255,255,255)
 xPos = (-401)
 yPos = (-401)
+mousex, mousey = pygame.mouse.get_pos()
 speed = 1
 
 font = pygame.font.Font('inter.ttf', 32, bold = True)
 dialoguefont = pygame.font.Font('inter.ttf', 24)
 dialoguetext = ''
+choicetext = ''
 notiftext = ''
+selectedChoice = 0
+choiceMode = None
+global showingChoice
+showingChoice = False
 
 global inv
-inv = ['','','','',''] # inventory
+inv = ['fishing rod','','','',''] # inventory
+money = 0
 fish = ['miss', 'carp'] # list of fish
 
 playerSize = 32
@@ -56,7 +59,6 @@ counter = 0
 
 charlesImg = pygame.image.load('images/charles.png')
 charlesImg = pygame.transform.scale(charlesImg, (playerSize,playerSize))
-
 
 clock = pygame.time.Clock()
 hasStarted = False
@@ -105,7 +107,6 @@ dialoguebox = pygame.image.load('images/dialoguebox.png')
 global debugColor
 debugColor = white
 
-
 backText = font.render('Back', True, white)
 quitText = font.render('Quit', True, white)
 
@@ -133,8 +134,11 @@ def dialogue(text):
     dialogueText = dialoguefont.render(str(text), True, white)
     gameDisplay.blit(dialoguebox, (0,0))
     gameDisplay.blit(dialogueText, (100,400))
-
+    
 def choice(choice1, choice2, choice3=None, choice4=None): # choice hud
+    global showingChoice
+    global selectedChoice
+    showingChoice == True
     choice1Text = font.render(str(choice1), True, white)
     choice1Rect = choice1Text.get_rect()
     choice1Rect.topleft = (650,400) # set the top left corner of the rectangle to coords of text
@@ -146,12 +150,12 @@ def choice(choice1, choice2, choice3=None, choice4=None): # choice hud
     if choice3 != None:
         choice3Text = font.render(str(choice3), True, white)
         choice3Rect = choice3Text.get_rect()
-        choice3Rect.topleft = (650,500)
+        choice3Rect.topleft = (850,400)
         gameDisplay.blit(choice3Text, (850,400))
     if choice4 != None:
         choice4Text = font.render(str(choice4), True, white)
         choice4Rect = choice4Text.get_rect()
-        choice4Rect.topleft = (650,550)
+        choice4Rect.topleft = (850,450)
         gameDisplay.blit(choice4Text, (850,450))
     gameDisplay.blit(choice1Text, (650,400))
     gameDisplay.blit(choice2Text, (650,450))
@@ -166,7 +170,7 @@ def choice(choice1, choice2, choice3=None, choice4=None): # choice hud
 
     # click handler
     for event in pygame.event.get():
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.MOUSEBUTTONUP:
             if choice1Rect.collidepoint(pygame.mouse.get_pos()):
                 return choice1
             elif choice2Rect.collidepoint(pygame.mouse.get_pos()):
@@ -178,14 +182,17 @@ def choice(choice1, choice2, choice3=None, choice4=None): # choice hud
                 if choice4Rect.collidepoint(pygame.mouse.get_pos()):
                     return choice4
 
-
 def shopping():
     global inv
     global dialoguetext
+    global choicetext
+    global choiceMode
+    global selectedChoice
     if inv[0] == '':
         dialoguetext = 'You got nothing on ya, who do you think you are? Scram!'
     else:
-        dialoguetext = 'Wanna buy some\'n?'
+        dialoguetext = 'Wanna buy some\'n or sell some\'n?'
+        choiceMode = 'shopping'
 
 def notif(text):
     notifText = dialoguefont.render(str(text), True, white)
@@ -287,7 +294,7 @@ while not hasStarted:
             pygame.quit()
             quit()
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.MOUSEBUTTONUP:
             print(mouse[0], mouse[1])
             # options button
             if mouse[0] > 440 and mouse[0] < 520 and mouse[1] > 300 and mouse[1] < 370:
@@ -323,7 +330,7 @@ while not hasStarted:
         gameDisplay.blit(debugText, (150,150))
         gameDisplay.blit(backText, (150,450))
         for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONUP:
                 # debug button
                 if options == True and mouse[0] > 150 and mouse[0] < 350 and mouse[1] > 150 and mouse[1] < 190:
                     debug = not debug
@@ -347,7 +354,7 @@ while not hasStarted:
 # game loop
 while hasStarted:
     print(inv)
-    print(location)
+    print(choiceMode)
     gameMap = pygame.image.load(mapImg)
     text = font.render("Position: " + str(xPos) + ", " + str(yPos) + " | Speed: " + str(speed) + " | FPS: ", True, white)
     debugText = font.render('Debug mode', True, debugColor)
@@ -390,6 +397,9 @@ while hasStarted:
             playerImg = pygame.transform.scale(playerImg, (playerSize,playerSize))
     if keys[pygame.K_SPACE]: 
         dialoguetext = ''
+        if choiceMode != None:
+            choiceMode = None
+            canMove = True
         if 'fishing rod' in inv and canFish == True and fishingHUD == False:
             fishingHUD = True
             canMove = False
@@ -504,7 +514,7 @@ while hasStarted:
         gameDisplay.blit(backText, (150,450))
         gameDisplay.blit(quitText, (700,450))
         for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONUP:
                 # debug button
                 if options == True and mouse[0] > 150 and mouse[0] < 350 and mouse[1] > 150 and mouse[1] < 190:
                     debug = not debug
@@ -591,6 +601,45 @@ while hasStarted:
         if inv[4] == 'carp':
             gameDisplay.blit(carpImg, (128,512))
 
+
+    # Render choices
+    if choiceMode == 'shopping': # charles shopping menu
+        canMove = False
+        shoppingChoice = choice("Buy", "Sell", "Exit")
+        addToInventory('carp')
+        addToInventory('carp')
+
+        if shoppingChoice == "Sell": # sell menu
+            if "carp" in inv:
+                for i in range(len(inv)):
+                    if inv[i] == 'carp':
+                        inv[i] = ''
+                        notiftext = 'You sold all the fish in your inventory.'
+                        dialoguetext = 'Thank ye for the fish!'
+                        choiceMode = None
+                        canMove = True        
+            else:
+                dialoguetext = 'You got no fish to sell!'
+                choiceMode = None
+                canMove = True
+
+        if shoppingChoice == "Buy": # buy menu
+            dialoguetext = 'Well shucks, I ain\'t got anything on me! Check again later.'
+            choiceMode = None
+            canMove = True
+
+
+
+
+    if len(choicetext) > 0:
+        if len(choicetext) == 2:
+            choice(choicetext[0], choicetext[1])
+        if len(choicetext) == 3:
+            choice(choicetext[0], choicetext[1], choicetext[2])
+        if len(choicetext) == 4:
+            choice(choicetext[0], choicetext[1], choicetext[2], choicetext[3])
+
+        
     pygame.display.update()
     clock.tick(60)
     pygame.event.pump()
