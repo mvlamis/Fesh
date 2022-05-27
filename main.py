@@ -49,7 +49,7 @@ isbuying = False
 
 global inv
 inv = ['fishing rod','','','',''] # inventory
-money = 999
+money = 0
 fish = ['miss', 'carp'] # list of fish
 
 playerSize = 32
@@ -414,10 +414,10 @@ while hasStarted:
             playerImg = pygame.transform.scale(playerImg, (playerSize,playerSize))
     if keys[pygame.K_SPACE]: 
         dialoguetext = ''
+        canMove = True
         if choiceMode != None:
             choiceMode = None
             shoppingChoice = None
-            canMove = True
         if 'fishing rod' in inv and canFish == True and fishingHUD == False:
             fishingHUD = True
             canMove = False
@@ -623,54 +623,97 @@ while hasStarted:
     # Render choices
     if choiceMode == 'shopping': # charles shopping menu
         canMove = False
-        shoppingChoice = choice("Buy", "Sell")
+        shoppingChoice = choice("Buy", "Sell Fish", "Sell Items", "Leave")
 
-    if shoppingChoice != None:
-        if shoppingChoice == "Sell": # sell menu
-            if "carp" in inv:
-                for i in range(len(inv)):
-                    if inv[i] == 'carp':
-                        inv[i] = ''
-                        money += 10
-                        pygame.time.set_timer(pygame.USEREVENT, 3000)
-                        dialoguetext = 'Thank ye for the fish!'
-                        choiceMode = None
-                        canMove = True        
-            else:
-                dialoguetext = 'You got no fish to sell!'
-                choiceMode = None
-                shoppingChoice = None
-                canMove = True
+    if shoppingChoice == "Sell Fish": # sell fish menu
+        if "carp" in inv:
+            for i in range(len(inv)):
+                if inv[i] == 'carp':
+                    inv[i] = ''
+                    money += 10
+                    pygame.time.set_timer(pygame.USEREVENT, 3000)
+                    dialoguetext = 'Thank ye for the fish!'
+                    choiceMode = None
+                    canMove = True        
+        else:
+            dialoguetext = 'You got no fish to sell!'
+            choiceMode = None
+            shoppingChoice = None
+            canMove = True
+
+    if shoppingChoice == "Sell Items": # sell items menu
+        if 'fishing rod' in inv and 'running shoes' not in inv:
+            dialoguetext = 'You got no items to sell!'
+            choiceMode = None
+            shoppingChoice = None
+            
+        if 'fishing rod' in inv and 'running shoes' in inv:
+            dialoguetext = 'Thanks for them running shoes!'
+            inv.remove('running shoes')
+            money += 30
+            choiceMode = None
+            shoppingChoice = None
+
+        if 'mega fishing rod' in inv and 'running shoes' not in inv:
+            dialoguetext = 'Thanks for that mega fishing rod!'
+            inv.remove('mega fishing rod')
+            choiceMode = None
+            shoppingChoice = None
+
+        if 'mega fishing rod' in inv and 'running shoes' in inv:
+            dialoguetext = 'Thanks for thems thingies!'
+            inv.remove('running shoes')
+            inv.remove('mega fishing rod')
+            money += 10
+            choiceMode = None
+            shoppingChoice = None
 
     if shoppingChoice == "Buy": # buy menu
         dialoguetext = 'Whachu want?'
-        isbuying = True
         choiceMode = None
         shoppingChoice = None
+        isbuying = True
+
+    if shoppingChoice == "Leave":
+        choiceMode = None
+        shoppingChoice = None
+        canMove = True
+        dialoguetext = ''
+        
 
     if isbuying:
         buyingChoice = choice("Mega Fishing Rod (150)", "Running Shoes (50)")
 
-    if buyingChoice == "Mega Fishing Rod":
+    if buyingChoice == "Mega Fishing Rod (150)":
         money = money - 150
-        if '' in inv:
-            addToInventory('mega fishing rod')
+        if inv[0] == 'fishing rod':
+            inv[0] = ('mega fishing rod')
             money -= 150
             dialoguetext = 'Pleasure doing business!'
+            buyingChoice = None
+            choiceMode = None
+            isbuying = False
         else:
             dialoguetext = 'You got no room for that!'
             choiceMode = None
-            canMove = True
 
-    if buyingChoice == "Running Shoes":
+            buyingChoice = None
+            isbuying = False
+
+    if buyingChoice == "Running Shoes (50)":
         if '' in inv:
             addToInventory('running shoes')
             money -= 50
             dialoguetext = 'Pleasure doing business!'
+            buyingChoice = None
+            choiceMode = None
+            isbuying = False
         else:
             dialoguetext = 'You got no room for that!'
             choiceMode = None
-            canMove = True
+
+            buyingChoice = None
+            isbuying = False
 
 
 
