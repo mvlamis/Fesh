@@ -80,6 +80,7 @@ upImages = ['char/Walk/Up/images/Char_walk_up_01.png','char/Walk/Up/images/Char_
 scaleImg = pygame.image.load('images/fishingscale.png')
 rodImg = pygame.image.load('images/fishingrod.png')
 carpImg = pygame.image.load('images/carp.png')
+moneyImg = pygame.image.load('images/moneybag.png')
 
 # loading screen clouds
 cloud1 = pygame.image.load('images/cloud1.png')
@@ -682,8 +683,10 @@ while hasStarted:
             choice(choicetext[0], choicetext[1], choicetext[2], choicetext[3])
 
     # render money
-    moneyText = font.render(str(money), True, white)
-    gameDisplay.blit(moneyText, (0,0))
+    moneyText = font.render("$" + str(money), True, white)
+    moneyTextRect = moneyText.get_rect()
+    gameDisplay.blit(moneyText, (960 - moneyTextRect.width, 544 - moneyTextRect.height))
+    gameDisplay.blit(moneyImg, (960 - moneyTextRect.width - moneyImg.get_width(), 544 - moneyTextRect.height))
 
         
     pygame.display.update()
