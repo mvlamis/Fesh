@@ -45,10 +45,11 @@ selectedChoice = 0
 choiceMode = None
 global showingChoice
 showingChoice = False
+isbuying = False
 
 global inv
 inv = ['fishing rod','','','',''] # inventory
-money = 0
+money = 999
 fish = ['miss', 'carp'] # list of fish
 
 playerSize = 32
@@ -59,6 +60,8 @@ counter = 0
 
 charlesImg = pygame.image.load('images/charles.png')
 charlesImg = pygame.transform.scale(charlesImg, (playerSize,playerSize))
+shoppingChoice = None
+buyingChoice = None
 
 clock = pygame.time.Clock()
 hasStarted = False
@@ -122,6 +125,7 @@ def addToInventory(item):
                 return
     else:
         notif('Your inventory is full!')
+        pygame.time.set_timer(pygame.USEREVENT, 3000)
 
 def touchingWater(): # checks if player is touching water
     global canFish
@@ -300,7 +304,18 @@ while not hasStarted:
             if mouse[0] > 440 and mouse[0] < 520 and mouse[1] > 300 and mouse[1] < 370:
                 options = True
                 print("options")
+            
+            # debug button
+            if options == True and mouse[0] > 150 and mouse[0] < 350 and mouse[1] > 150 and mouse[1] < 190:
+                debug = not debug
+            
+            # back button
+            if options == True and mouse[0] > 150 and mouse[0] < 230 and mouse[1] > 450 and mouse[1] < 480:
+                options = False
 
+            # quit button
+            if options == True and mouse[0] > 700 and mouse[0] < 800 and mouse[1] > 450 and mouse[1] < 480:
+                hasStarted = False
             # start button
             if mouse[0] > display_width/2 - startButton.get_width()/2 and mouse[1] > display_height/2 - startButton.get_height()/2 and mouse[0] < display_width/2 + startButton.get_width()/2 and mouse[1] < display_height/2 + startButton.get_height()/2:
                 while mapAlpha < 255:
@@ -355,6 +370,7 @@ while not hasStarted:
 while hasStarted:
     print(inv)
     print(choiceMode)
+    print(shoppingChoice)
     gameMap = pygame.image.load(mapImg)
     text = font.render("Position: " + str(xPos) + ", " + str(yPos) + " | Speed: " + str(speed) + " | FPS: ", True, white)
     debugText = font.render('Debug mode', True, debugColor)
@@ -399,6 +415,7 @@ while hasStarted:
         dialoguetext = ''
         if choiceMode != None:
             choiceMode = None
+            shoppingChoice = None
             canMove = True
         if 'fishing rod' in inv and canFish == True and fishingHUD == False:
             fishingHUD = True
@@ -605,29 +622,54 @@ while hasStarted:
     # Render choices
     if choiceMode == 'shopping': # charles shopping menu
         canMove = False
-        shoppingChoice = choice("Buy", "Sell", "Exit")
-        addToInventory('carp')
-        addToInventory('carp')
+        shoppingChoice = choice("Buy", "Sell")
 
+    if shoppingChoice != None:
         if shoppingChoice == "Sell": # sell menu
             if "carp" in inv:
                 for i in range(len(inv)):
                     if inv[i] == 'carp':
                         inv[i] = ''
-                        notiftext = 'You sold all the fish in your inventory.'
+                        money += 10
+                        pygame.time.set_timer(pygame.USEREVENT, 3000)
                         dialoguetext = 'Thank ye for the fish!'
                         choiceMode = None
                         canMove = True        
             else:
                 dialoguetext = 'You got no fish to sell!'
                 choiceMode = None
+                shoppingChoice = None
                 canMove = True
 
-        if shoppingChoice == "Buy": # buy menu
-            dialoguetext = 'Well shucks, I ain\'t got anything on me! Check again later.'
+    if shoppingChoice == "Buy": # buy menu
+        dialoguetext = 'Whachu want?'
+        isbuying = True
+        choiceMode = None
+        shoppingChoice = None
+
+    if isbuying:
+        buyingChoice = choice("Mega Fishing Rod (150)", "Running Shoes (50)")
+
+    if buyingChoice == "Mega Fishing Rod":
+        money = money - 150
+        if '' in inv:
+            addToInventory('mega fishing rod')
+            money -= 150
+            dialoguetext = 'Pleasure doing business!'
+        else:
+            dialoguetext = 'You got no room for that!'
             choiceMode = None
             canMove = True
 
+    if buyingChoice == "Running Shoes":
+        if '' in inv:
+            addToInventory('running shoes')
+            money -= 50
+            dialoguetext = 'Pleasure doing business!'
+        else:
+            dialoguetext = 'You got no room for that!'
+            choiceMode = None
+            canMove = True
 
 
 
@@ -639,10 +681,14 @@ while hasStarted:
         if len(choicetext) == 4:
             choice(choicetext[0], choicetext[1], choicetext[2], choicetext[3])
 
+    # render money
+    moneyText = font.render(str(money), True, white)
+    gameDisplay.blit(moneyText, (0,0))
+
         
     pygame.display.update()
     clock.tick(60)
-    pygame.event.pump()
+    # pygame.event.pump()
 
 pygame.quit()
 quit()
