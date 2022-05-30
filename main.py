@@ -18,6 +18,9 @@ pygame.mixer.init()
 global debug
 debug = False # set to true to see debug info
 
+sound = True
+music = True
+
 display_width = 960 # collisions depend on game resolution, do not change
 display_height = 544
 gameDisplay = pygame.display.set_mode((display_width,display_height))
@@ -32,6 +35,7 @@ global yPos
 
 black = (0,0,0)
 white = (255,255,255)
+green = (0,255,0)
 xPos = (-401)
 yPos = (-401)
 mousex, mousey = pygame.mouse.get_pos()
@@ -121,9 +125,13 @@ dialoguebox = pygame.image.load('images/dialoguebox.png')
 
 global debugColor
 debugColor = white
+musicColor = green
+soundColor = green
 
 backText = font.render('Back', True, white)
 quitText = font.render('Quit', True, white)
+musicText = font.render('Music', True, musicColor)
+soundText = font.render('Sound', True, soundColor)
 
 def drawCollisionLine(x1,y1,x2,y2): # draws a line to show where the player is colliding with
     pygame.draw.line(gameDisplay, white, (xPos + x1, yPos + y1), (xPos + x2,yPos + y2), 2)
@@ -302,11 +310,15 @@ def enterOutside():
         yPos = -397
         location = 'outside'
 
-pygame.mixer.music.load('sounds/menu.mp3')
-pygame.mixer.music.play(-1)
+if music:
+    pygame.mixer.music.load('sounds/menu.mp3')
+    pygame.mixer.music.play(-1)
 # menu screen loop
 while not hasStarted:
     debugText = font.render('Debug mode', True, debugColor)
+    musicText = font.render('Music', True, musicColor)
+    soundText = font.render('Sound', True, soundColor)
+    
     mouse = pygame.mouse.get_pos()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -331,9 +343,28 @@ while not hasStarted:
             # quit button
             if options == True and mouse[0] > 700 and mouse[0] < 800 and mouse[1] > 450 and mouse[1] < 480:
                 hasStarted = False
+
+            # sound button
+            if options == True and mouse[0] > 150 and mouse[0] < 230 and mouse[1] > 250 and mouse[1] < 290:
+                sound = not sound
+                if sound:
+                    print('sound on')
+                else:
+                    print('sound off')
+
+            # music button
+            if options == True and mouse[0] > 150 and mouse[0] < 230 and mouse[1] > 200 and mouse[1] < 240:
+                music = not music
+                if music:
+                    pygame.mixer.music.load('sounds/menu.mp3')
+                    pygame.mixer.music.play(-1)
+                else:
+                    pygame.mixer.music.stop()
+
             # start button
             if mouse[0] > display_width/2 - startButton.get_width()/2 and mouse[1] > display_height/2 - startButton.get_height()/2 and mouse[0] < display_width/2 + startButton.get_width()/2 and mouse[1] < display_height/2 + startButton.get_height()/2:
-                pygame.mixer.Sound.play(startSound)
+                if sound:
+                    pygame.mixer.Sound.play(startSound)
                 while mapAlpha < 255:
                     gameDisplay.blit(menuBg, (0,0))
                     cloud1_x += 7
@@ -360,6 +391,9 @@ while not hasStarted:
         gameDisplay.blit(menuBg, (0,0))
         gameDisplay.blit(debugText, (150,150))
         gameDisplay.blit(backText, (150,450))
+        gameDisplay.blit(musicText, (150,200))
+        gameDisplay.blit(soundText, (150,250))
+        
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONUP:
                 # debug button
@@ -369,11 +403,20 @@ while not hasStarted:
                 # back button
                 if options == True and mouse[0] > 150 and mouse[0] < 230 and mouse[1] > 450 and mouse[1] < 480:
                     options = False
+
                     
         if debug:
-            debugColor = (0,255,0)
+            debugColor = green
         else:
             debugColor = white
+        if sound:
+            soundColor = green
+        else:
+            soundColor = white
+        if music:
+            musicColor = green
+        else:
+            musicColor = white
     else:
         if hasStarted == False:
             gameDisplay.blit(startButton, (display_width/2 - startButton.get_width()/2, display_height/2 - startButton.get_height()/2))
@@ -428,7 +471,7 @@ while hasStarted:
             playerImg = pygame.image.load(rightImages[counter])
             playerImg = pygame.transform.scale(playerImg, (playerSize,playerSize))
     if keys[pygame.K_SPACE]: 
-        if dialoguetext != '':
+        if dialoguetext != '' and sound:
             pygame.mixer.Sound.play(closedialogueSound)
         dialoguetext = ''
         canMove = True
@@ -550,6 +593,8 @@ while hasStarted:
         gameDisplay.blit(debugText, (150,150))
         gameDisplay.blit(backText, (150,450))
         gameDisplay.blit(quitText, (700,450))
+        gameDisplay.blit(musicText, (150,300))
+        gameDisplay.blit(soundText, (150,350))
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONUP:
                 # debug button
@@ -565,9 +610,17 @@ while hasStarted:
                     hasStarted = False
     
         if debug:
-            debugColor = (0,255,0)
+            debugColor = green
         else:
             debugColor = white
+        if sound:
+            soundColor = green
+        else:
+            soundColor = white
+        if music:
+            musicColor = green
+        else:
+            musicColor = white
     else:
         gameDisplay.fill(black)
         gameDisplay.blit(gameMap, (xPos,yPos))
@@ -717,7 +770,8 @@ while hasStarted:
                 inv[0] = ('mega fishing rod')
                 money -= 150
                 dialoguetext = 'Pleasure doing business!'
-                pygame.mixer.Sound.play(purchaseSound)
+                if sound:
+                    pygame.mixer.Sound.play(purchaseSound)
                 buyingChoice = None
                 choiceMode = None
                 isbuying = False
@@ -740,7 +794,8 @@ while hasStarted:
                 addToInventory('running shoes')
                 money -= 50
                 dialoguetext = 'Pleasure doing business!'
-                pygame.mixer.Sound.play(purchaseSound)
+                if sound:
+                    pygame.mixer.Sound.play(purchaseSound)
                 buyingChoice = None
                 choiceMode = None
                 isbuying = False
