@@ -13,6 +13,7 @@ import random
 
 pygame.init()
 pygame.font.init()
+pygame.mixer.init()
 
 global debug
 debug = False # set to true to see debug info
@@ -48,15 +49,25 @@ showingChoice = False
 isbuying = False
 
 global inv
-inv = ['fishing rod','','','',''] # inventory
+inv = ['','','','',''] # inventory
 money = 0
-fish = ['miss', 'carp'] # list of fish
+if 'mega fishing rod' not in inv:
+    fish = ['miss', 'carp'] # list of fish
+else:
+    fish = ['miss', 'carp', 'squid', 'tuna']
 
 playerSize = 32
 npcImg = pygame.image.load('images/npc.png')
 npcImg = pygame.transform.scale(npcImg, (playerSize,playerSize))
 npcRect = pygame.Rect(xPos + 420,yPos + 200,npcImg.get_width(),npcImg.get_height())
 counter = 0
+
+#sounds init
+menuMusic = pygame.mixer.music.load('sounds/menu.mp3')
+startSound = pygame.mixer.Sound('sounds/start.wav')
+opendialogueSound = pygame.mixer.Sound('sounds/opendialogue.wav')
+closedialogueSound = pygame.mixer.Sound('sounds/closedialogue.wav')
+purchaseSound = pygame.mixer.Sound('sounds/purchase.wav')
 
 charlesImg = pygame.image.load('images/charles.png')
 charlesImg = pygame.transform.scale(charlesImg, (playerSize,playerSize))
@@ -139,6 +150,7 @@ def dialogue(text):
     dialogueText = dialoguefont.render(str(text), True, white)
     gameDisplay.blit(dialoguebox, (0,0))
     gameDisplay.blit(dialogueText, (100,400))
+    # pygame.mixer.Sound.play(opendialogueSound)
     
 def choice(choice1, choice2, choice3=None, choice4=None): # choice hud
     global showingChoice
@@ -290,6 +302,8 @@ def enterOutside():
         yPos = -397
         location = 'outside'
 
+pygame.mixer.music.load('sounds/menu.mp3')
+pygame.mixer.music.play(-1)
 # menu screen loop
 while not hasStarted:
     debugText = font.render('Debug mode', True, debugColor)
@@ -319,6 +333,7 @@ while not hasStarted:
                 hasStarted = False
             # start button
             if mouse[0] > display_width/2 - startButton.get_width()/2 and mouse[1] > display_height/2 - startButton.get_height()/2 and mouse[0] < display_width/2 + startButton.get_width()/2 and mouse[1] < display_height/2 + startButton.get_height()/2:
+                pygame.mixer.Sound.play(startSound)
                 while mapAlpha < 255:
                     gameDisplay.blit(menuBg, (0,0))
                     cloud1_x += 7
@@ -413,6 +428,8 @@ while hasStarted:
             playerImg = pygame.image.load(rightImages[counter])
             playerImg = pygame.transform.scale(playerImg, (playerSize,playerSize))
     if keys[pygame.K_SPACE]: 
+        if dialoguetext != '':
+            pygame.mixer.Sound.play(closedialogueSound)
         dialoguetext = ''
         canMove = True
         if choiceMode != None:
@@ -507,6 +524,8 @@ while hasStarted:
         rightCollide(434,73,-144)
         topCollide(-144,434,227)
         topCollide(-144,187,-41)
+        leftCollide(187,-144,-204)
+        rightCollide(227,-144,-204)
         bottomCollide(-207,227,187, enterOutside)
 
         # npc collision
@@ -567,6 +586,7 @@ while hasStarted:
         
     if dialoguetext != '': # render dialogue box
         dialogue(dialoguetext)
+        
 
     if notiftext != '': # render notification box
         notif(notiftext)
@@ -685,36 +705,51 @@ while hasStarted:
         buyingChoice = choice("Mega Fishing Rod (150)", "Running Shoes (50)")
 
     if buyingChoice == "Mega Fishing Rod (150)":
-        money = money - 150
-        if inv[0] == 'fishing rod':
-            inv[0] = ('mega fishing rod')
-            money -= 150
-            dialoguetext = 'Pleasure doing business!'
-            buyingChoice = None
+        if money < 150:
+            dialoguetext = 'You don\'t have enough money!'
             choiceMode = None
+            shoppingChoice = None
             isbuying = False
+            buyingChoice = None
         else:
-            dialoguetext = 'You got no room for that!'
-            choiceMode = None
+            money = money - 150
+            if inv[0] == 'fishing rod':
+                inv[0] = ('mega fishing rod')
+                money -= 150
+                dialoguetext = 'Pleasure doing business!'
+                pygame.mixer.Sound.play(purchaseSound)
+                buyingChoice = None
+                choiceMode = None
+                isbuying = False
+            else:
+                dialoguetext = 'You got no room for that!'
+                choiceMode = None
 
-            buyingChoice = None
-            isbuying = False
+                buyingChoice = None
+                isbuying = False
 
     if buyingChoice == "Running Shoes (50)":
-        if '' in inv:
-            addToInventory('running shoes')
-            money -= 50
-            dialoguetext = 'Pleasure doing business!'
-            buyingChoice = None
+        if money < 50:
+            dialoguetext = 'You don\'t have enough money!'
             choiceMode = None
+            shoppingChoice = None
             isbuying = False
+            buyingChoice = None
         else:
-            dialoguetext = 'You got no room for that!'
-            choiceMode = None
+            if '' in inv:
+                addToInventory('running shoes')
+                money -= 50
+                dialoguetext = 'Pleasure doing business!'
+                pygame.mixer.Sound.play(purchaseSound)
+                buyingChoice = None
+                choiceMode = None
+                isbuying = False
+            else:
+                dialoguetext = 'You got no room for that!'
+                choiceMode = None
 
-            buyingChoice = None
-            isbuying = False
-
+                buyingChoice = None
+                isbuying = False
 
 
     if len(choicetext) > 0:
