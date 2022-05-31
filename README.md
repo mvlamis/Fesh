@@ -33,7 +33,7 @@ For the fishing mechanic, both the level of success and choice of fish are rando
 |--|--|
 | Clicks don't always register |This is both an issue with PyGame and malpractice due to the way PyGame handles click events. Right now the only workaround is to click multiple times until it works.  |
 |Fishing doesn't always work|Walk towards the water again. Fishing will only register within 3 seconds of touching water.|
-|Choice text extends past screen|To be fixed
+|~~Choice text extends past screen~~|~~To be fixed~~ Fixed!
 
 ## Credits
 
