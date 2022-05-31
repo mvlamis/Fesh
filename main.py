@@ -8,6 +8,7 @@
 #      `\\´´\¸.·´
                      
                      
+from tkinter import CENTER
 import pygame
 import random
 
@@ -19,12 +20,12 @@ global debug
 debug = False # set to true to see debug info
 
 sound = True
-music = True
+music = False
 
 display_width = 960 # collisions depend on game resolution, do not change
 display_height = 544
 gameDisplay = pygame.display.set_mode((display_width,display_height))
-pygame.display.set_caption('lil dude man')
+pygame.display.set_caption('Fesh')
 canMove = True
 fishingHUD = False
 canFish = False
@@ -43,6 +44,7 @@ speed = 1
 
 font = pygame.font.Font('inter.ttf', 32, bold = True)
 dialoguefont = pygame.font.Font('inter.ttf', 24)
+choicefont = pygame.font.Font('inter.ttf', 20)
 dialoguetext = ''
 choicetext = ''
 notiftext = ''
@@ -53,7 +55,7 @@ showingChoice = False
 isbuying = False
 
 global inv
-inv = ['','','','',''] # inventory
+inv = ['fishing rod','','','',''] # inventory
 money = 0
 if 'mega fishing rod' not in inv:
     fish = ['miss', 'carp'] # list of fish
@@ -164,24 +166,24 @@ def choice(choice1, choice2, choice3=None, choice4=None): # choice hud
     global showingChoice
     global selectedChoice
     showingChoice == True
-    choice1Text = font.render(str(choice1), True, white)
+    choice1Text = choicefont.render(str(choice1), True, white)
     choice1Rect = choice1Text.get_rect()
     choice1Rect.topleft = (650,400) # set the top left corner of the rectangle to coords of text
-    choice2Text = font.render(str(choice2), True, white)
+    choice2Text = choicefont.render(str(choice2), True, white)
     choice2Rect = choice2Text.get_rect()
     choice2Rect.topleft = (650,450)
 
     #only render the choices if they are not none
     if choice3 != None:
-        choice3Text = font.render(str(choice3), True, white)
+        choice3Text = choicefont.render(str(choice3), True, white)
         choice3Rect = choice3Text.get_rect()
-        choice3Rect.topleft = (850,400)
-        gameDisplay.blit(choice3Text, (850,400))
+        choice3Rect.topleft = (750,400)
+        gameDisplay.blit(choice3Text, (750,400))
     if choice4 != None:
-        choice4Text = font.render(str(choice4), True, white)
+        choice4Text = choicefont.render(str(choice4), True, white)
         choice4Rect = choice4Text.get_rect()
-        choice4Rect.topleft = (850,450)
-        gameDisplay.blit(choice4Text, (850,450))
+        choice4Rect.topleft = (750,450)
+        gameDisplay.blit(choice4Text, (750,450))
     gameDisplay.blit(choice1Text, (650,400))
     gameDisplay.blit(choice2Text, (650,450))
 
@@ -478,7 +480,7 @@ while hasStarted:
         if choiceMode != None:
             choiceMode = None
             shoppingChoice = None
-        if 'fishing rod' in inv and canFish == True and fishingHUD == False:
+        if 'fishing rod' in inv and canFish == True and fishingHUD == False or 'mega fishing rod' in inv and canFish == True and fishingHUD == False:
             fishingHUD = True
             canMove = False
             print('fishing')
@@ -696,7 +698,7 @@ while hasStarted:
     # Render choices
     if choiceMode == 'shopping': # charles shopping menu
         canMove = False
-        shoppingChoice = choice("Buy", "Sell Fish", "Sell Items", "Leave")
+        shoppingChoice = choice("Buy", "Sell Fish", "Sell Items")
 
     if shoppingChoice == "Sell Fish": # sell fish menu
         if "carp" in inv:
@@ -722,22 +724,28 @@ while hasStarted:
             
         if 'fishing rod' in inv and 'running shoes' in inv:
             dialoguetext = 'Thanks for them running shoes!'
-            inv.remove('running shoes')
+            for i in range(len(inv)):
+                if inv[i] == 'running shoes':
+                    inv[i] = ''
             money += 30
             choiceMode = None
             shoppingChoice = None
 
         if 'mega fishing rod' in inv and 'running shoes' not in inv:
             dialoguetext = 'Thanks for that mega fishing rod!'
-            inv.remove('mega fishing rod')
+            for i in range(len(inv)):
+                if inv[i] == 'mega fishing rod':
+                    inv[i] = ''
+            money += 50
             choiceMode = None
             shoppingChoice = None
 
         if 'mega fishing rod' in inv and 'running shoes' in inv:
             dialoguetext = 'Thanks for thems thingies!'
-            inv.remove('running shoes')
-            inv.remove('mega fishing rod')
-            money += 10
+            for i in range(len(inv)):
+                if inv[i] == 'running shoes' or inv[i] == 'mega fishing rod':
+                    inv[i] = ''
+            money += 80
             choiceMode = None
             shoppingChoice = None
 
@@ -745,14 +753,7 @@ while hasStarted:
         dialoguetext = 'Whachu want?'
         choiceMode = None
         shoppingChoice = None
-        isbuying = True
-
-    if shoppingChoice == "Leave":
-        choiceMode = None
-        shoppingChoice = None
-        canMove = True
-        dialoguetext = ''
-        
+        isbuying = True      
 
     if isbuying:
         buyingChoice = choice("Mega Fishing Rod (150)", "Running Shoes (50)")
@@ -765,7 +766,6 @@ while hasStarted:
             isbuying = False
             buyingChoice = None
         else:
-            money = money - 150
             if inv[0] == 'fishing rod':
                 inv[0] = ('mega fishing rod')
                 money -= 150

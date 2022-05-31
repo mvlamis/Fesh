@@ -1,8 +1,8 @@
-## Fesh
+# Fesh
 *By Michael Vlamis for ICS2O*
 
 
-## **Summary**
+## Summary
 
 _Fesh_ is a pixel-style fishing game where the player can sell fish in exchange for more fishing gear.
 
@@ -20,7 +20,7 @@ Maps are designed using a free map editor called Tiled, and game assets are sour
 
 For the fishing mechanic, both the level of success and choice of fish are randomized. An inventory list will keep track of the items and equipment that a player holds at once, and requires strategic planning to stay under the item limit. 
 
-**Controls**
+## Controls
 |Action|Button  |
 |--|--|
 |Movement|`WASD` or arrow keys  |
@@ -28,15 +28,20 @@ For the fishing mechanic, both the level of success and choice of fish are rando
 |Start fishing|`space`|
 |Interact|`space`
 
-
-
-**Known Bugs**
+## Known Bugs
 | Problem | Workaround |
 |--|--|
 | Clicks don't always register |This is both an issue with PyGame and malpractice due to the way PyGame handles click events. Right now the only workaround is to click multiple times until it works.  |
 |Fishing doesn't always work|Walk towards the water again. Fishing will only register within 3 seconds of touching water.|
 |Choice text extends past screen|To be fixed
 
+## Credits
+
+**Music**: Gelato Beach (Nintendo)
+
+**Sound Effects**:
+- Logic Pro (Apple)
+- Wii Fit Plus (Nintendo)
 
 
 
