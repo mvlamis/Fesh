@@ -55,7 +55,7 @@ showingChoice = False
 isbuying = False
 
 global inv
-inv = ['fishing rod','','','',''] # inventory
+inv = ['mega fishing rod','','','',''] # inventory
 money = 0
 if 'mega fishing rod' not in inv:
     fish = ['miss', 'carp'] # list of fish
@@ -701,15 +701,26 @@ while hasStarted:
         shoppingChoice = choice("Buy", "Sell Fish", "Sell Items")
 
     if shoppingChoice == "Sell Fish": # sell fish menu
-        if "carp" in inv:
+        if "carp" in inv or 'squid' in inv or 'tuna' in inv:
             for i in range(len(inv)):
                 if inv[i] == 'carp':
                     inv[i] = ''
                     money += 10
-                    pygame.time.set_timer(pygame.USEREVENT, 3000)
-                    dialoguetext = 'Thank ye for the fish!'
-                    choiceMode = None
-                    canMove = True        
+
+                if inv[i] == 'squid':
+                    inv[i] = ''
+                    money += 50
+
+                if inv[i] == 'tuna':
+                    inv[i] = ''
+                    money += 20
+                    
+            pygame.time.set_timer(pygame.USEREVENT, 3000)
+            dialoguetext = 'Thank ye for the fish!'
+            choiceMode = None
+            canMove = True 
+            shoppingChoice = None
+
         else:
             dialoguetext = 'You got no fish to sell!'
             choiceMode = None
