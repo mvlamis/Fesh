@@ -20,12 +20,13 @@ global debug
 debug = False # set to true to see debug info
 
 sound = True
-music = False
+music = True
 
 display_width = 960 # collisions depend on game resolution, do not change
 display_height = 544
 gameDisplay = pygame.display.set_mode((display_width,display_height))
 pygame.display.set_caption('Fesh')
+pygame.mouse.set_cursor(pygame.cursors.diamond)
 canMove = True
 fishingHUD = False
 canFish = False
@@ -45,6 +46,8 @@ speed = 1
 font = pygame.font.Font('inter.ttf', 32, bold = True)
 dialoguefont = pygame.font.Font('inter.ttf', 24)
 choicefont = pygame.font.Font('inter.ttf', 20)
+titlefont = pygame.font.Font('inter.ttf', 64)
+titlefont.italic = True
 dialoguetext = ''
 choicetext = ''
 notiftext = ''
@@ -55,7 +58,7 @@ showingChoice = False
 isbuying = False
 
 global inv
-inv = ['mega fishing rod','','','',''] # inventory
+inv = ['','','','',''] # inventory
 money = 0
 if 'mega fishing rod' not in inv:
     fish = ['miss', 'carp'] # list of fish
@@ -215,7 +218,7 @@ def shopping():
     global choicetext
     global choiceMode
     global selectedChoice
-    if inv[0] == '':
+    if inv[0] == '' and money == 0:
         dialoguetext = 'You got nothing on ya, who do you think you are? Scram!'
     else:
         dialoguetext = 'Wanna buy some\'n or sell some\'n?'
@@ -317,6 +320,7 @@ if music:
     pygame.mixer.music.play(-1)
 # menu screen loop
 while not hasStarted:
+    titleText = titlefont.render('Fesh', True, black)
     debugText = font.render('Debug mode', True, debugColor)
     musicText = font.render('Music', True, musicColor)
     soundText = font.render('Sound', True, soundColor)
@@ -421,6 +425,7 @@ while not hasStarted:
             musicColor = white
     else:
         if hasStarted == False:
+            gameDisplay.blit(titleText, (display_width/2 - titleText.get_width()/2, 125))
             gameDisplay.blit(startButton, (display_width/2 - startButton.get_width()/2, display_height/2 - startButton.get_height()/2))
             gameDisplay.blit(optionsButton, (430,330))
     pygame.display.update()
@@ -659,41 +664,14 @@ while hasStarted:
         pygame.draw.rect(gameDisplay, black , (750,200,scaleImg.get_width(),scaleImg.get_height()), 2)
         pygame.draw.rect(gameDisplay, black, (750, fishingLineY, scaleImg.get_width(), 5))
 
-    if inv[0] != '': # first slot at x = 0
-        pygame.draw.rect(gameDisplay, white, (0,512,32,32), 0)
-        if inv[0] == 'fishing rod':
-            gameDisplay.blit(rodImg, (0,512))
-        if inv[0] == 'carp':
-            gameDisplay.blit(carpImg, (0,512))
-
-    if inv[1] != '': # second slot at x = 32
-        pygame.draw.rect(gameDisplay, white, (32,512,32,32), 0)
-        if inv[1] == 'fishing rod':
-            gameDisplay.blit(rodImg, (32,512))
-        if inv[1] == 'carp':
-            gameDisplay.blit(carpImg, (32,512))
-
-    if inv[2] != '': # third slot at x = 64
-        pygame.draw.rect(gameDisplay, white, (64,512,32,32), 0)
-        if inv[2] == 'fishing rod':
-            gameDisplay.blit(rodImg, (64,512))
-        if inv[2] == 'carp':
-            gameDisplay.blit(carpImg, (64,512))
-    
-    if inv[3] != '': # fourth slot at x = 96
-        pygame.draw.rect(gameDisplay, white, (96,512,32,32), 0)
-        if inv[3] == 'fishing rod':
-            gameDisplay.blit(rodImg, (96,512))
-        if inv[3] == 'carp':
-            gameDisplay.blit(carpImg, (96,512))
-
-    if inv[4] != '': # fifth slot at x = 128
-        pygame.draw.rect(gameDisplay, white, (128,512,32,32), 0)
-        if inv[4] == 'fishing rod':
-            gameDisplay.blit(rodImg, (128,512))
-        if inv[4] == 'carp':
-            gameDisplay.blit(carpImg, (128,512))
-
+    # Render inventory
+    for i in range(len(inv)):
+        if inv[i] != '': # inv slots are 32 px wide, so multiply 32 by i to get the x pos
+            pygame.draw.rect(gameDisplay, white, (32*i,512,32,32), 0)
+        if inv[i] == 'fishing rod':
+            gameDisplay.blit(rodImg, (32*i,512))
+        if inv[i] == 'carp':
+            gameDisplay.blit(carpImg, (32*i,512))
 
     # Render choices
     if choiceMode == 'shopping': # charles shopping menu
