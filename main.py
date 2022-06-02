@@ -6,9 +6,7 @@
 # : © ):´;      ¸  {
 #  `·.¸ `·  ¸.·´\`·¸)
 #      `\\´´\¸.·´
-                     
-                     
-from tkinter import CENTER
+
 import pygame
 import random
 
@@ -40,7 +38,6 @@ white = (255,255,255)
 green = (0,255,0)
 xPos = (-401)
 yPos = (-401)
-mousex, mousey = pygame.mouse.get_pos()
 speed = 1
 
 font = pygame.font.Font('inter.ttf', 32, bold = True)
@@ -60,10 +57,7 @@ isbuying = False
 global inv
 inv = ['','','','',''] # inventory
 money = 0
-if 'mega fishing rod' not in inv:
-    fish = ['miss', 'carp'] # list of fish
-else:
-    fish = ['miss', 'carp', 'squid', 'tuna']
+fish = ['miss', 'carp'] # list of fish without mega fishing rod
 
 playerSize = 32
 npcImg = pygame.image.load('images/npc.png')
@@ -138,9 +132,6 @@ quitText = font.render('Quit', True, white)
 musicText = font.render('Music', True, musicColor)
 soundText = font.render('Sound', True, soundColor)
 
-def drawCollisionLine(x1,y1,x2,y2): # draws a line to show where the player is colliding with
-    pygame.draw.line(gameDisplay, white, (xPos + x1, yPos + y1), (xPos + x2,yPos + y2), 2)
-
 def addToInventory(item):
     global inv
     if '' in inv:
@@ -152,18 +143,30 @@ def addToInventory(item):
         notif('Your inventory is full!')
         pygame.time.set_timer(pygame.USEREVENT, 3000)
 
+def getBackpack():
+    global inv
+    global notiftext
+    tempbackpack = []
+    for i in range(len(inv)):
+        if inv[i] != '':
+            tempbackpack.append(inv[i])
+
+    inv = ['','','','','','','','','']
+
+    for i in range(len(tempbackpack)):
+        inv[i] = tempbackpack[i]
+    notiftext = 'You can now carry more!'
+
 def touchingWater(): # checks if player is touching water
     global canFish
     print('touching water')
     canFish = True
     pygame.time.set_timer(pygame.USEREVENT, 3000)
 
-
 def dialogue(text): 
     dialogueText = dialoguefont.render(str(text), True, white)
     gameDisplay.blit(dialoguebox, (0,0))
     gameDisplay.blit(dialogueText, (100,400))
-    # pygame.mixer.Sound.play(opendialogueSound)
     
 def choice(choice1, choice2, choice3=None, choice4=None): # choice hud
     global showingChoice
@@ -228,8 +231,6 @@ def notif(text):
     notifText = dialoguefont.render(str(text), True, white)
     gameDisplay.blit(notifText, (650,320))
 
-collisionLines = []
-
 def rightCollide(x,y1,y2, action=None):
     global xPos
     global yPos
@@ -238,12 +239,6 @@ def rightCollide(x,y1,y2, action=None):
             xPos = xPos - speed
             if action != None:
                 action()
-
-    collisionLines.append(x)
-    collisionLines.append(y1)
-    collisionLines.append(y2)
-
-    drawCollisionLine(x,y1,x,y2)
             
 def leftCollide(x,y1,y2, action=None):
     global xPos
@@ -531,46 +526,46 @@ while hasStarted:
             yPos = yPos + speed
 
         # tent border
-        rightCollide(-316,-318,-385)
-        leftCollide(-230,-318,-385)
+        rightCollide(-316,-318,-386)
+        leftCollide(-230,-318,-386)
         topCollide(-318,-230,-316)
-        bottomCollide(-385,-230,-316, enterShop)
+        bottomCollide(-386,-230,-316, enterShop)
 
         # house border
-        rightCollide(195,87,-160)
-        leftCollide(420,87,-160)
-        topCollide(87,420,195)
-        bottomCollide(-160,420,195, enterHouse)
+        rightCollide(196,88,-160)
+        leftCollide(420,88,-160)
+        topCollide(88,420,196)
+        bottomCollide(-160,420,196, enterHouse)
 
 
         # water border
-        leftCollide(-103,20,-150, touchingWater)
-        bottomCollide(-150,-103,-1000, touchingWater)
+        leftCollide(-104,20,-150, touchingWater)
+        bottomCollide(-150,-104,-1000, touchingWater)
         leftCollide(-974,-626,-1000, touchingWater)
-        leftCollide(-879,-441,-627, touchingWater)
-        leftCollide(-845,-224,-441, touchingWater)
+        leftCollide(-880,-442,-628, touchingWater)
+        leftCollide(-846,-224,-442, touchingWater)
         leftCollide(-806,-150,-224, touchingWater)
         bottomCollide(-224,-806,-1000, touchingWater)
-        bottomCollide(-441,-845,-1000, touchingWater)
-        bottomCollide(-627,-879,-1000, touchingWater)
-        topCollide(20,-103,-1000, touchingWater)
-        leftCollide(-131,115,20, touchingWater)
-        leftCollide(-164,365,111, touchingWater)
+        bottomCollide(-442,-846,-1000, touchingWater)
+        bottomCollide(-628,-880,-1000, touchingWater)
+        topCollide(20,-104,-1000, touchingWater)
+        leftCollide(-132,116,20, touchingWater)
+        leftCollide(-164,366,112, touchingWater)
         topCollide(112,-130,-1000, touchingWater)
 
         # pond border
-        leftCollide(-551,-625,-724)
-        leftCollide(-585,-724,-760)
-        bottomCollide(-724,-551,-585)
-        bottomCollide(-760,-585,-730)
-        topCollide(-625,-551,-666)
+        leftCollide(-552,-626,-724)
+        leftCollide(-586,-724,-760)
+        bottomCollide(-724,-552,-586)
+        bottomCollide(-760,-586,-730)
+        topCollide(-626,-552,-666)
         topCollide(-654,-666,-700)
 
     if location == 'house': # HOUSE COLLISIONS
-        bottomCollide(73,434,131)
-        bottomCollide(202,131,-41)
-        leftCollide(-41,202,-144)
-        rightCollide(130,202,73)
+        bottomCollide(74,434,132)
+        bottomCollide(202,132,-42)
+        leftCollide(-42,202,-144)
+        rightCollide(130,202,734)
         rightCollide(434,73,-144)
         topCollide(-144,434,227)
         topCollide(-144,187,-41)
@@ -706,21 +701,21 @@ while hasStarted:
             canMove = True
 
     if shoppingChoice == "Sell Items": # sell items menu
-        if 'fishing rod' in inv and 'running shoes' not in inv:
+        if 'fishing rod' in inv and 'backpack' not in inv:
             dialoguetext = 'You got no items to sell!'
             choiceMode = None
             shoppingChoice = None
             
-        if 'fishing rod' in inv and 'running shoes' in inv:
-            dialoguetext = 'Thanks for them running shoes!'
+        if 'fishing rod' in inv and 'backpack' in inv:
+            dialoguetext = 'Thanks for them backpack!'
             for i in range(len(inv)):
-                if inv[i] == 'running shoes':
+                if inv[i] == 'backpack':
                     inv[i] = ''
             money += 30
             choiceMode = None
             shoppingChoice = None
 
-        if 'mega fishing rod' in inv and 'running shoes' not in inv:
+        if 'mega fishing rod' in inv and 'backpack' not in inv:
             dialoguetext = 'Thanks for that mega fishing rod!'
             for i in range(len(inv)):
                 if inv[i] == 'mega fishing rod':
@@ -729,10 +724,10 @@ while hasStarted:
             choiceMode = None
             shoppingChoice = None
 
-        if 'mega fishing rod' in inv and 'running shoes' in inv:
+        if 'mega fishing rod' in inv and 'backpack' in inv:
             dialoguetext = 'Thanks for thems thingies!'
             for i in range(len(inv)):
-                if inv[i] == 'running shoes' or inv[i] == 'mega fishing rod':
+                if inv[i] == 'backpack' or inv[i] == 'mega fishing rod':
                     inv[i] = ''
             money += 80
             choiceMode = None
@@ -745,7 +740,7 @@ while hasStarted:
         isbuying = True      
 
     if isbuying:
-        buyingChoice = choice("Mega Fishing Rod (150)", "Running Shoes (50)")
+        buyingChoice = choice("Mega Fishing Rod (150)", "Backpack (50)")
 
     if buyingChoice == "Mega Fishing Rod (150)":
         if money < 150:
@@ -757,6 +752,7 @@ while hasStarted:
         else:
             if inv[0] == 'fishing rod':
                 inv[0] = ('mega fishing rod')
+                fish = ['miss', 'carp', 'squid', 'tuna']
                 money -= 150
                 dialoguetext = 'Pleasure doing business!'
                 if sound:
@@ -771,7 +767,7 @@ while hasStarted:
                 buyingChoice = None
                 isbuying = False
 
-    if buyingChoice == "Running Shoes (50)":
+    if buyingChoice == "Backpack (50)":
         if money < 50:
             dialoguetext = 'You don\'t have enough money!'
             choiceMode = None
@@ -780,7 +776,8 @@ while hasStarted:
             buyingChoice = None
         else:
             if '' in inv:
-                addToInventory('running shoes')
+                addToInventory('backpack')
+                getBackpack()
                 money -= 50
                 dialoguetext = 'Pleasure doing business!'
                 if sound:
@@ -795,7 +792,6 @@ while hasStarted:
                 buyingChoice = None
                 isbuying = False
 
-
     if len(choicetext) > 0:
         if len(choicetext) == 2:
             choice(choicetext[0], choicetext[1])
@@ -809,7 +805,6 @@ while hasStarted:
     moneyTextRect = moneyText.get_rect()
     gameDisplay.blit(moneyText, (960 - moneyTextRect.width, 544 - moneyTextRect.height))
     gameDisplay.blit(moneyImg, (960 - moneyTextRect.width - moneyImg.get_width(), 544 - moneyTextRect.height))
-
         
     pygame.display.update()
     clock.tick(60)
