@@ -14,7 +14,7 @@ The player is placed in a campground with no equipment. They will come across a 
 
 ## Behind the scenes
 
-The game are programmed entirely in Python using the PyGame library. This is in order to make it easily cross-compatible between Mac, which I use to develop, and Windows, which the game is tested on. It also allows for simplified integration with other environments, such as web browsers and software distributors. 
+The game is programmed entirely in Python using the PyGame library. This is in order to make it easily cross-compatible between Mac, which I use to develop, and Windows, which the game is tested on. It also allows for simplified integration with other environments, such as web browsers and software distributors. 
 
 Maps are designed using a free map editor called Tiled, and game assets are sourced from [Kenney on itch.io](https://kenney.itch.io). Additional pixel art can be drawn using an online tool called [Piskel](https://www.piskelapp.com). 
 
