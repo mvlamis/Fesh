@@ -7,18 +7,20 @@
 #  `·.¸ `·  ¸.·´\`·¸)
 #      `\\´´\¸.·´
 
+from glob import glob
 import pygame
 import random
+import time
 
 pygame.init()
 pygame.font.init()
 pygame.mixer.init()
 
 global debug
-debug = False # set to true to see debug info
+debug = True # set to true to see debug info
 
 sound = True
-music = True
+music = False
 
 display_width = 960 # collisions depend on game resolution, do not change
 display_height = 544
@@ -55,9 +57,9 @@ showingChoice = False
 isbuying = False
 
 global inv
-inv = ['','','','',''] # inventory
+inv = ['fishing rod','','','',''] # inventory
 money = 0
-fish = ['miss', 'carp'] # list of fish without mega fishing rod
+fish = ['carp'] # list of fish without mega fishing rod
 
 playerSize = 32
 npcImg = pygame.image.load('images/npc.png')
@@ -91,10 +93,18 @@ rightImages = ['char/Walk/Right/images/Char_walk_right_01.png','char/Walk/Right/
 upImages = ['char/Walk/Up/images/Char_walk_up_01.png','char/Walk/Up/images/Char_walk_up_01.png','char/Walk/Up/images/Char_walk_up_01.png','char/Walk/Up/images/Char_walk_up_01.png','char/Walk/Up/images/Char_walk_up_01.png','char/Walk/Up/images/Char_walk_up_02.png','char/Walk/Up/images/Char_walk_up_02.png','char/Walk/Up/images/Char_walk_up_02.png','char/Walk/Up/images/Char_walk_up_02.png','char/Walk/Up/images/Char_walk_up_02.png','char/Walk/Up/images/Char_walk_up_03.png','char/Walk/Up/images/Char_walk_up_03.png','char/Walk/Up/images/Char_walk_up_03.png','char/Walk/Up/images/Char_walk_up_03.png','char/Walk/Up/images/Char_walk_up_03.png','char/Walk/Up/images/Char_walk_up_04.png','char/Walk/Up/images/Char_walk_up_04.png','char/Walk/Up/images/Char_walk_up_04.png','char/Walk/Up/images/Char_walk_up_04.png','char/Walk/Up/images/Char_walk_up_04.png','char/Walk/Up/images/Char_walk_up_05.png','char/Walk/Up/images/Char_walk_up_05.png','char/Walk/Up/images/Char_walk_up_05.png','char/Walk/Up/images/Char_walk_up_05.png','char/Walk/Up/images/Char_walk_up_05.png','char/Walk/Up/images/Char_walk_up_06.png','char/Walk/Up/images/Char_walk_up_06.png','char/Walk/Up/images/Char_walk_up_06.png','char/Walk/Up/images/Char_walk_up_06.png','char/Walk/Up/images/Char_walk_up_06.png']
 
 # object images
-scaleImg = pygame.image.load('images/fishingscale.png')
+fishingbgImg = pygame.image.load('images/fishingbg.png')
+fishingbgImg = pygame.transform.scale(fishingbgImg, (200,200))
+hookImg = pygame.image.load('images/hook.png')
+hookImg = pygame.transform.scale(hookImg, (200,200))
 rodImg = pygame.image.load('images/fishingrod.png')
 carpImg = pygame.image.load('images/carp.png')
 moneyImg = pygame.image.load('images/moneybag.png')
+
+# key images
+fKey = pygame.image.load('images/keys/f_Key.png')
+fKey = pygame.transform.scale(fKey, (50,50))
+fKeyGoingUp = False
 
 # loading screen clouds
 cloud1 = pygame.image.load('images/cloud1.png')
@@ -132,6 +142,56 @@ quitText = font.render('Quit', True, white)
 musicText = font.render('Music', True, musicColor)
 soundText = font.render('Sound', True, soundColor)
 
+timer = 0
+showingShadow = False
+
+
+fKeyPos = 375
+def fishing():
+    global canFish
+    global canMove
+    global timer
+    global showingShadow
+    global fKey
+    global fKeyGoingUp
+    global fKeyPos
+    global caughtFish
+    global shadowImg
+    
+    caughtFish = random.choice(fish)
+    shadowImg = pygame.image.load('images/' + caughtFish + '_shadow.png')
+    canMove = False
+    gameDisplay.blit(fishingbgImg, (750,200))
+    if canFish == True:
+        gameDisplay.blit(hookImg, (750,200))
+        gameDisplay.blit(fKey, (825,fKeyPos))
+
+    if fKeyGoingUp == False:
+        fKeyPos += 0.3
+        if fKeyPos >= 375:
+            fKeyGoingUp = True
+    elif fKeyGoingUp == True:
+        fKeyPos -= 0.3
+        if fKeyPos <= 360:
+            fKeyGoingUp = False
+
+    # show fish shadow randomly
+    if showingShadow == False:
+        if random.randint(0,300) == 1:
+            showingShadow = True
+
+    if showingShadow == True:
+        timer += 1
+        print(timer)
+        gameDisplay.blit(shadowImg, (830,280))
+        # after random amount of time, hide fish
+        if timer == 50:
+            showingShadow = False
+            timer = 0
+
+    if fishingHUD == False:
+        canMove = True
+
 def addToInventory(item):
     global inv
     if '' in inv:
@@ -159,8 +219,10 @@ def getBackpack():
 
 def touchingWater(): # checks if player is touching water
     global canFish
-    print('touching water')
-    canFish = True
+    global canMove
+    if spacePressed:
+        canFish = True
+        canMove = False
     pygame.time.set_timer(pygame.USEREVENT, 3000)
 
 def dialogue(text): 
@@ -449,6 +511,8 @@ while hasStarted:
         if event.type == pygame.USEREVENT:
             notiftext = ''
             canFish = False
+            fishingHUD = False
+            
 
     keys = pygame.key.get_pressed()  #checking pressed keys
     if canMove:
@@ -477,6 +541,8 @@ while hasStarted:
             pygame.mixer.Sound.play(closedialogueSound)
         dialoguetext = ''
         canMove = True
+        global spacePressed
+        spacePressed = True
         if choiceMode != None:
             choiceMode = None
             shoppingChoice = None
@@ -484,14 +550,13 @@ while hasStarted:
             fishingHUD = True
             canMove = False
             print('fishing')
-    if keys[pygame.K_f] and fishingHUD == True:
-        caughtFish = random.choice(fish)
+        
+    else:
+        spacePressed = False
+    if keys[pygame.K_f] and fishingHUD == True and showingShadow == True:
         if '' in inv:
-            if caughtFish == 'miss':
-                notiftext = 'You missed!'
-            else:
-                addToInventory(caughtFish)
-                notiftext = 'You caught a ' + caughtFish + '!'
+            addToInventory(caughtFish)
+            notiftext = 'You caught a ' + caughtFish + '!'
         else:
             notiftext = 'Your inventory is full!'
         fishingHUD = False
@@ -647,17 +712,10 @@ while hasStarted:
         notif(notiftext)
 
     if fishingHUD == True: # render fishing HUD
-        if fishingLineY == 200:
-            goingUp = False
-        if fishingLineY >= scaleImg.get_height()+200:
-            goingUp = True
-        if goingUp == True:
-            fishingLineY -= 3
-        else:
-            fishingLineY += 3
-        gameDisplay.blit(scaleImg, (750,200))
-        pygame.draw.rect(gameDisplay, black , (750,200,scaleImg.get_width(),scaleImg.get_height()), 2)
-        pygame.draw.rect(gameDisplay, black, (750, fishingLineY, scaleImg.get_width(), 5))
+        fishing()
+    
+        # pygame.draw.rect(gameDisplay, black , (750,200,fishingbgImg.get_width(),fishingbgImg.get_height()), 2)
+        # pygame.draw.rect(gameDisplay, black, (750, fishingLineY, fishingbgImg.get_width(), 5))
 
     # Render inventory
     for i in range(len(inv)):
@@ -752,7 +810,7 @@ while hasStarted:
         else:
             if inv[0] == 'fishing rod':
                 inv[0] = ('mega fishing rod')
-                fish = ['miss', 'carp', 'squid', 'tuna']
+                fish = ['carp', 'squid', 'tuna']
                 money -= 150
                 dialoguetext = 'Pleasure doing business!'
                 if sound:

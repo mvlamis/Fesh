@@ -38,6 +38,8 @@ For the fishing mechanic, both the level of success and choice of fish are rando
 ## Credits
 
 **Music**: Gelato Beach (Nintendo)
+**Artwork**: Kenney on itch.io
+**Icons**: Nicolae Berbece
 
 **Sound Effects**:
 - Logic Pro (Apple)
