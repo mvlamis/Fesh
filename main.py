@@ -504,10 +504,6 @@ while hasStarted:
         if event.type == pygame.QUIT:
             hasStarted = False
 
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_ESCAPE:
-                options = not options
-
         if event.type == pygame.USEREVENT:
             notiftext = ''
             canFish = False
@@ -647,58 +643,23 @@ while hasStarted:
                 addToInventory('fishing rod')
                 dialoguetext = '' 
                 
+    gameDisplay.fill(black)
+    gameDisplay.blit(gameMap, (xPos,yPos))
+    gameDisplay.blit(playerImg, (display_width / 2, display_height / 2))
+
     if location == 'shop': # SHOP COLLISIONS
         bottomCollide(-16, 449,220, enterOutside)
         leftCollide(220, 122, -16)
         rightCollide(449, 122, -16)
         bottomCollide(122, 449, 122, shopping)
 
+    if location == 'house':
+        gameDisplay.blit(npcImg, (xPos + 420,yPos + 200))
+        npcRect = pygame.Rect(xPos + 420,yPos + 200,npcImg.get_width(),npcImg.get_height())
 
-    if options == True: # options menu
-        clock.tick(60)
-        gameDisplay.blit(menuBg, (0,0))
-        gameDisplay.blit(debugText, (150,150))
-        gameDisplay.blit(backText, (150,450))
-        gameDisplay.blit(quitText, (700,450))
-        gameDisplay.blit(musicText, (150,300))
-        gameDisplay.blit(soundText, (150,350))
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONUP:
-                # debug button
-                if options == True and mouse[0] > 150 and mouse[0] < 350 and mouse[1] > 150 and mouse[1] < 190:
-                    debug = not debug
-                
-                # back button
-                if options == True and mouse[0] > 150 and mouse[0] < 230 and mouse[1] > 450 and mouse[1] < 480:
-                    options = False
+    if location == 'shop':
+        gameDisplay.blit(charlesImg, (xPos + 210,yPos + 100))
 
-                # quit button
-                if options == True and mouse[0] > 700 and mouse[0] < 800 and mouse[1] > 450 and mouse[1] < 480:
-                    hasStarted = False
-    
-        if debug:
-            debugColor = green
-        else:
-            debugColor = white
-        if sound:
-            soundColor = green
-        else:
-            soundColor = white
-        if music:
-            musicColor = green
-        else:
-            musicColor = white
-    else:
-        gameDisplay.fill(black)
-        gameDisplay.blit(gameMap, (xPos,yPos))
-        gameDisplay.blit(playerImg, (display_width / 2, display_height / 2))
-
-        if location == 'house':
-            gameDisplay.blit(npcImg, (xPos + 420,yPos + 200))
-            npcRect = pygame.Rect(xPos + 420,yPos + 200,npcImg.get_width(),npcImg.get_height())
-
-        if location == 'shop':
-            gameDisplay.blit(charlesImg, (xPos + 210,yPos + 100))
     if debug == True:
         gameDisplay.blit(text, (0, 0))
         pygame.draw.rect(gameDisplay, white, playerRect, 2)
