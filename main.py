@@ -57,7 +57,7 @@ showingChoice = False
 isbuying = False
 
 global inv
-inv = ['fishing rod','','','',''] # inventory
+inv = ['fishing rod','tuna','carp','squid',''] # inventory
 money = 0
 fish = ['carp'] # list of fish without mega fishing rod
 
@@ -99,6 +99,8 @@ hookImg = pygame.image.load('images/hook.png')
 hookImg = pygame.transform.scale(hookImg, (200,200))
 rodImg = pygame.image.load('images/fishingrod.png')
 carpImg = pygame.image.load('images/carp.png')
+squidImg = pygame.image.load('images/squid.png')
+tunaImg = pygame.image.load('images/tuna.png')
 moneyImg = pygame.image.load('images/moneybag.png')
 
 # key images
@@ -686,6 +688,10 @@ while hasStarted:
             gameDisplay.blit(rodImg, (32*i,512))
         if inv[i] == 'carp':
             gameDisplay.blit(carpImg, (32*i,512))
+        if inv[i] == 'squid':
+            gameDisplay.blit(squidImg, (32*i,512))
+        if inv[i] == 'tuna':
+            gameDisplay.blit(tunaImg, (32*i,512))
 
     # Render choices
     if choiceMode == 'shopping': # charles shopping menu
