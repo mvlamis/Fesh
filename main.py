@@ -93,6 +93,8 @@ rightImages = ['char/Walk/Right/images/Char_walk_right_01.png','char/Walk/Right/
 upImages = ['char/Walk/Up/images/Char_walk_up_01.png','char/Walk/Up/images/Char_walk_up_01.png','char/Walk/Up/images/Char_walk_up_01.png','char/Walk/Up/images/Char_walk_up_01.png','char/Walk/Up/images/Char_walk_up_01.png','char/Walk/Up/images/Char_walk_up_02.png','char/Walk/Up/images/Char_walk_up_02.png','char/Walk/Up/images/Char_walk_up_02.png','char/Walk/Up/images/Char_walk_up_02.png','char/Walk/Up/images/Char_walk_up_02.png','char/Walk/Up/images/Char_walk_up_03.png','char/Walk/Up/images/Char_walk_up_03.png','char/Walk/Up/images/Char_walk_up_03.png','char/Walk/Up/images/Char_walk_up_03.png','char/Walk/Up/images/Char_walk_up_03.png','char/Walk/Up/images/Char_walk_up_04.png','char/Walk/Up/images/Char_walk_up_04.png','char/Walk/Up/images/Char_walk_up_04.png','char/Walk/Up/images/Char_walk_up_04.png','char/Walk/Up/images/Char_walk_up_04.png','char/Walk/Up/images/Char_walk_up_05.png','char/Walk/Up/images/Char_walk_up_05.png','char/Walk/Up/images/Char_walk_up_05.png','char/Walk/Up/images/Char_walk_up_05.png','char/Walk/Up/images/Char_walk_up_05.png','char/Walk/Up/images/Char_walk_up_06.png','char/Walk/Up/images/Char_walk_up_06.png','char/Walk/Up/images/Char_walk_up_06.png','char/Walk/Up/images/Char_walk_up_06.png','char/Walk/Up/images/Char_walk_up_06.png']
 
 # object images
+logoImg = pygame.image.load('images/logo.png')
+logoImg = pygame.transform.scale(logoImg, (1024/2,768/2))
 fishingbgImg = pygame.image.load('images/fishingbg.png')
 fishingbgImg = pygame.transform.scale(fishingbgImg, (200,200))
 hookImg = pygame.image.load('images/hook.png')
@@ -379,7 +381,6 @@ if music:
     pygame.mixer.music.play(-1)
 # menu screen loop
 while not hasStarted:
-    titleText = titlefont.render('Fesh', True, black)
     debugText = font.render('Debug mode', True, debugColor)
     musicText = font.render('Music', True, musicColor)
     soundText = font.render('Sound', True, soundColor)
@@ -484,7 +485,7 @@ while not hasStarted:
             musicColor = white
     else:
         if hasStarted == False:
-            gameDisplay.blit(titleText, (display_width/2 - titleText.get_width()/2, 125))
+            gameDisplay.blit(logoImg, (display_width/2 - logoImg.get_width()/2, -50))
             gameDisplay.blit(startButton, (display_width/2 - startButton.get_width()/2, display_height/2 - startButton.get_height()/2))
             gameDisplay.blit(optionsButton, (430,330))
     pygame.display.update()
