@@ -10,17 +10,16 @@
 from glob import glob
 import pygame
 import random
-import time
 
 pygame.init()
 pygame.font.init()
 pygame.mixer.init()
 
 global debug
-debug = True # set to true to see debug info
+debug = False # set to true to see debug info
 
 sound = True
-music = False
+music = True
 
 display_width = 960 # collisions depend on game resolution, do not change
 display_height = 544
@@ -30,7 +29,6 @@ pygame.mouse.set_cursor(pygame.cursors.diamond)
 canMove = True
 fishingHUD = False
 canFish = False
-fishingLineY = 200
 
 global xPos
 global yPos
@@ -45,19 +43,16 @@ speed = 1
 font = pygame.font.Font('inter.ttf', 32, bold = True)
 dialoguefont = pygame.font.Font('inter.ttf', 24)
 choicefont = pygame.font.Font('inter.ttf', 20)
-titlefont = pygame.font.Font('inter.ttf', 64)
-titlefont.italic = True
 dialoguetext = ''
 choicetext = ''
 notiftext = ''
-selectedChoice = 0
 choiceMode = None
 global showingChoice
 showingChoice = False
 isbuying = False
 
 global inv
-inv = ['fishing rod','tuna','carp','squid',''] # inventory
+inv = ['','','','',''] # inventory
 money = 0
 fish = ['carp'] # list of fish without mega fishing rod
 
@@ -100,6 +95,8 @@ fishingbgImg = pygame.transform.scale(fishingbgImg, (200,200))
 hookImg = pygame.image.load('images/hook.png')
 hookImg = pygame.transform.scale(hookImg, (200,200))
 rodImg = pygame.image.load('images/fishingrod.png')
+megaRodImg = pygame.image.load('images/megafishingrod.png')
+backpackImg = pygame.image.load('images/backpack.png')
 carpImg = pygame.image.load('images/carp.png')
 squidImg = pygame.image.load('images/squid.png')
 tunaImg = pygame.image.load('images/tuna.png')
@@ -236,7 +233,6 @@ def dialogue(text):
     
 def choice(choice1, choice2, choice3=None, choice4=None): # choice hud
     global showingChoice
-    global selectedChoice
     showingChoice == True
     choice1Text = choicefont.render(str(choice1), True, white)
     choice1Rect = choice1Text.get_rect()
@@ -286,7 +282,6 @@ def shopping():
     global dialoguetext
     global choicetext
     global choiceMode
-    global selectedChoice
     if inv[0] == '' and money == 0:
         dialoguetext = 'You got nothing on ya, who do you think you are? Scram!'
     else:
@@ -687,12 +682,17 @@ while hasStarted:
             pygame.draw.rect(gameDisplay, white, (32*i,512,32,32), 0)
         if inv[i] == 'fishing rod':
             gameDisplay.blit(rodImg, (32*i,512))
+        if inv[i] == 'backpack':
+            gameDisplay.blit(backpackImg, (32*i,512))
+        if inv[i] == 'mega fishing rod':
+            gameDisplay.blit(megaRodImg, (32*i,512))
         if inv[i] == 'carp':
             gameDisplay.blit(carpImg, (32*i,512))
         if inv[i] == 'squid':
             gameDisplay.blit(squidImg, (32*i,512))
         if inv[i] == 'tuna':
             gameDisplay.blit(tunaImg, (32*i,512))
+        
 
     # Render choices
     if choiceMode == 'shopping': # charles shopping menu
